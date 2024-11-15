@@ -1,4 +1,4 @@
-# Swift XRT Light Curves
+# *Swift*-XRT Light Curves
 This directory contains data downloaded from the *Swift*-XRT GRB lightcurve repository: [[link]](https://www.swift.ac.uk/xrt_curves/)
 
 `./PC_incbad`: data points collected in a [`P`]hoton [`C`]ounting mode
