@@ -4,6 +4,7 @@ import pandas as pd
 import pickle
 import sys
 from statistics import NormalDist
+from sklearn.linear_model import HuberRegressor
 from tqdm import tqdm
 
 
@@ -379,9 +380,9 @@ class FeatureExtractor:
             divided by (magnitude stand. dev. * number of timestamps)
         """
         sigma = np.std(self.magnitude, ddof=1)
-        n_timestamps = len(self.magnitude)
+        N = len(self.magnitude)
         cusum_range = (
-            np.ptp(np.cumsum(self.magnitude)) / sigma / n_timestamps
+            np.ptp(np.cumsum(self.magnitude)) / sigma / N
         ).item()
 
         return cusum_range
@@ -420,14 +421,14 @@ class FeatureExtractor:
         """
 
         sigma = np.std(self.magnitude, ddof=1)
-        n_timestamps = len(self.magnitude)
+        N = len(self.magnitude)
         etaE = (
             self.Duration()**2 * 
             np.mean(
                 (
                     np.diff(self.magnitude)/np.diff(self.timestamps)
                 )**2
-            ) / sigma**2 / (n_timestamps-1)**2
+            ) / sigma**2 / (N-1)**2
         ).item()
 
         return etaE
@@ -494,11 +495,95 @@ class FeatureExtractor:
 
         Returns
         -------
-        kurtosis : float
-            The kurtosis of the
-            magnitude distribution.
+        G2 : float
+            The unbiased kurtosis statistic 
+            of the magnitude distribution.
         """
-        
+
+        N = len(self.magnitude)
+        assert N >= 4, 'Not enough data to calculate kurtosis'
+
+        mu = np.mean(self.magnitude)
+        sigma = np.std(self.magnitude, ddof=1)
+
+        G2 = (
+            N * (N+1) / (N-1) / (N-2) / (N-3) * 
+            np.sum(
+                (self.magnitude-mu)**4
+            ) / sigma**4
+            - 3 * (N-1)**2 / (N-2) / (N-3)
+        ).item()
+
+        return G2
+
+    def HuberLinearFit(self)->tuple:
+        """
+        Returns the intercept and slope
+        of the magnitude - time decimal logarithm
+        trend. Uses a default configuration
+        of the sklearn HuberRegressor model 
+        with sample_weight inverse proportional
+        to the squared magnitude errors to 
+        estimate the trend.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        intercept : float
+            The estimated intercept of the trend.
+        slope : float
+            The estimated slope of the trend.
+        """
+        X = np.log10(self.timestamps).reshape(-1, 1)
+        y = self.magnitude
+        sample_weight = self.magnitudeErr**(-2)
+        fitted = HuberRegressor().fit(X, y, sample_weight=sample_weight)
+        intercept, slope = fitted.intercept_, fitted.coef_.item()
+        return (intercept, slope)
+
+    def Mean(self)->float:
+        """
+        Returns the mean magnitude.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        mu : float
+            The mean magnitude.
+        """
+        mu = np.mean(self.magnitude)
+        return mu
+
+    def MeanVariance(self)->float:
+        """
+        Returns the standard deviation-to-mean 
+        ratio for the magnitude.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        ratio : float
+            Standard deviation-to-mean ratio 
+            for the magnitude.
+        """
+        mu = np.mean(self.magnitude)
+        sigma = np.std(self.magnitude, ddof=1)
+        return sigma/mu
+
+    
+
+
+
+
 
 
 
