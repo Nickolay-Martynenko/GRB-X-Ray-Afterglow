@@ -3,16 +3,23 @@ import numpy as np
 import pandas as pd
 import pickle
 import sys
+from tqdm import tqdm
 
 LOG10 = 2.302585092994046
+
+args = sys.argv
+assert len(args) == 3, f'Invalid number of arguments.\nUsage: python3 {args[0]} target_file'
+target_file, output_file = args[1:]
 
 def extract_raw(dataframe:pd.DataFrame,
                 apply_log10_Rate:bool=False,
                 full_output:bool=False,
                 apply_log10_Time:bool=False)->tuple:
     """
-    Extracts relevant lightcurve data from a single Swift-XRT dataframe.
-    The positive and negative errors are symmetrized using their geometric mean.
+    Extracts relevant lightcurve data from a
+    single Swift-XRT dataframe. The positive and 
+    negative errors are symmetrized using their 
+    geometric mean.
 
     Parameters
     ----------
@@ -85,9 +92,10 @@ def rebin_pad(dataframe:pd.DataFrame,
     """
     Applies padded rebinning to a single Swift-XRT lightcurve.
 
-    The resulting lightcurve will be binned uniformly in the log-Time scale
-    The rebinning algorithm is designed so that the average count rate in 
-    each bin remains unchanged after the rebinning.
+    The resulting lightcurve will be binned uniformly in 
+    the log-Time scale. The rebinning algorithm is designed 
+    so that the average count rate in each bin remains unchanged 
+    after the rebinning.
     
     Parameters
     ----------
@@ -115,9 +123,11 @@ def rebin_pad(dataframe:pd.DataFrame,
         that is, 10^{-3} s^{-1}. Otherwise, the 
         original units of s^{-1} are preserved.
     full_output : bool, default=False
-        If True, return (`lgRate`, `weight`, `lgTime`, `num_true_entries`),
-        where `num_true_entries` is a number of non-empty bins in the 
-        rebinned lightcurve. Otherwise only (`lgRate`, `weight`) is returned.
+        If True, return (`lgRate`, `weight`, `lgTime`,
+        `num_true_entries`), where `num_true_entries` 
+        is a number of non-empty bins in the rebinned 
+        lightcurve. Otherwise only (`lgRate`, `weight`)
+        is returned.
         
     Returns
     -------
@@ -144,14 +154,21 @@ def rebin_pad(dataframe:pd.DataFrame,
     lgTimeOrig = dataframe['Time'].apply(np.log10).values
 
     for bin_index in range(lgTime_nbins):
-        mask = (lgTimeOrig >= bin_edges[bin_index]) * (lgTimeOrig < bin_edges[bin_index+1])
-        dataframe_fragment = dataframe.loc[mask, ['Time', 'Rate', 'RateNeg', 'RatePos']].copy()
+        mask = (
+            (lgTimeOrig >= bin_edges[bin_index]) * 
+            (lgTimeOrig < bin_edges[bin_index+1])
+        )
+        dataframe_fragment = dataframe.loc[
+        mask, ['Time', 'Rate', 'RateNeg', 'RatePos']
+        ].copy()
         
         local_grid = np.exp(
             LOG10 * np.hstack(
                 (
                     bin_edges[np.newaxis, bin_index],
-                    0.5 * (lgTimeOrig[mask][1:] + lgTimeOrig[mask][:-1]),
+                    0.5 * (
+                        lgTimeOrig[mask][1:] + lgTimeOrig[mask][:-1]
+                    ),
                     bin_edges[np.newaxis, bin_index+1]
                 )
             )
@@ -160,7 +177,9 @@ def rebin_pad(dataframe:pd.DataFrame,
                 dataframe_fragment['Rate'].values * np.diff(local_grid)
         ).item()
         flag = integral > 0.0
-        lgRate[bin_index] = np.log10(integral / np.ptp(local_grid)) if flag else padding
+        lgRate[bin_index] = np.log10(
+            integral / np.ptp(local_grid)
+        ) if flag else padding
         weight[bin_index] = (LOG10 * integral / 
                              np.sum(
                                  (-np.prod(
@@ -182,38 +201,157 @@ def rebin_pad(dataframe:pd.DataFrame,
         return (lgRate, weight)
 
 def masked_interp(timegrid:np.ndarray,
-                  colllection:np.ndarray,
+                  timeseries:np.ndarray,
                   mask:np.ndarray)->np.ndarray:
     """
-    Linear interpolation of a padded collection of time series.
+    Linear interpolation of a padded timeseries.
 
     Parameters
     ----------
     timegrid : np.ndarray
-        1-dimensional array, the common time grid
-        for the collection of arrays `colllection`
-    collection : np.ndarray
-        2-dimensional array of shape (n_samples, n_timestamps),
-        where n_timestamps is the length of `timegrid`.
-        A collection of n_samples timeseries to be interpolated.
+        1-dimensional array containing the timestamps
+        of the `timeseries`. The values are assumed
+        to be a strictly increasing sequence.
+    timeseries : np.ndarray
+        1-dimensional timeseries to be interpolated.
     mask : np.ndarray
-        2-dimensional boolean array of shape 
-        (n_samples, n_timestamps). True entries 
-        denote the values to be used for interpolation.
+        1-dimensional boolean array. True entries 
+        denote the indices to be used for interpolation.
 
     Returns
     -------
-    interpolated_collection : np.ndarray
-        2-dimensional array of shape (n_samples, n_timestamps),
-        An interpolated collection of timeseries.
+    interpolated_timeseries : np.ndarray
+        1-dimensional array. The interpolated `timeseries`.
     """
-    interpolated_collection = np.zeros_like(colllection)
-    for i, (timeseries, mask) in enumerate(zip(collection, mask)):
-        interpolated_collection[i] = np.interp(
+    interpolated_timeseries = np.interp(
             timegrid, timegrid[mask], timeseries[mask]
         )
-    return interpolated_collection
+    return interpolated_timeseries
 
-with open('SwiftXRT_Dataset.pickle', 'rb') as f:
-    dataset = pickle.load(f)
-print(rebin_pad(Dataset['GRB 221009A']))
+def make_dataset(content:dict,
+                 minTimestamps:int=1,
+                 minBins:int=8,
+                 only_GRB:bool=True,
+                 retain_orig:bool=True)->dict:
+    """
+    Preprocesses raw light curves for further analysis.
+
+    Parameters
+    ----------
+    content : dict
+        Content to be preprocessed. It is
+        assumed that the keys are event names
+        and the values are pandas.dataframes
+        which include Swift-XRT basic 
+        lightcurve columns.
+    minTimestamps : int, default=1
+        Minimal number of data points in the
+        original lightcurve required for further
+        processing. If a lightcurve includes 
+        less data points than `minTimestamps`,
+        the event will be excluded from the 
+        output dataset.
+    minBins : int, default=8
+        Minimal non-empty bins in the
+        rebinned lightcurve required for further
+        processing. If a rebinned lightcurve 
+        includes less non-empty bins than 
+        `minBins`, the event be excluded from 
+        the output dataset.
+    only_GRB : bool, default=True
+        If True, only the events matching
+        common-used GRB name pattern (that is,
+        confirmed GRB X-Ray afterglows) will
+        be processed. Otherwise, the output
+        dataset may include X-Ray lightcurves
+        not related to any confirmed GRB.
+    retain_orig : bool, default=True
+        If True, original lightcurve data
+        is retained in the resulting dataset.
+        Otherwise, only rebinned data points
+        are returned.
+
+    Returns
+    -------
+    dataset : dict
+        Preprocessed dataset.
+    """
+    dataset = dict()
+    filtered_entries = {
+        'not a confirmed GRB': 0,
+        'not enough timestamps': 0,
+        'not enough non-empty bins': 0,
+    }
+    print('[Processing]')
+    for event, dataframe in tqdm(content.items()):
+        event_info = dict()
+        if only_GRB:
+            if not event.startswith('GRB'):
+                filtered_entries['not a confirmed GRB'] += 1
+                continue
+
+            else:
+                YY, MM, DD = map(int, 
+                    map(''.join,
+                        zip(*[iter(event.removeprefix('GRB '))]*2)
+                    )
+                )
+                YY += 2000
+                event_info = {'Year': YY, 'Month': MM, 'Day': DD}
+
+        if len(dataframe) < minTimestamps:
+            filtered_entries['not enough timestamps'] += 1
+            continue
+
+        lgRatePad, weight, lgTime, nBins = rebin_pad(
+                dataframe,
+                full_output=True
+            )
+        if nBins < minBins:
+            filtered_entries['not enough bins'] += 1
+            continue
+
+        lgRateBinLin = masked_interp(
+            lgTime, lgRatePad,
+            weight.astype(bool)
+        )
+        event_info.update({
+            'Rebinned': {
+            'lgRatePad': lgRatePad,
+            'lgRateLin': lgRateLin,
+            'weight': weight,
+            'lgTime': lgTime
+            }
+        })
+
+        if retain_orig:
+            Rate, RateErr, Time, TimeErr = extract_raw(
+                dataframe,
+                full_output=True
+            )
+            event_info.update({
+                'Original': {
+                'Rate': Rate,
+                'RateErr': RateErr,
+                'Time': Time,
+                'TimeErr': TimeErr
+                }
+
+            })
+        dataset[event] = event_info
+    print(f'Successfully processed {len(content)} events.')
+    print(f'Found {len(dataset)} events satisfying the requirements. Filtered:')
+    for reason, num_events in filtered_entries.items():
+        print(f'\t{num_events} events - {reason}')
+
+    return dataset
+
+with open(target_file, 'rb') as f:
+    content = pickle.load(f)
+dataset = make_dataset(content)
+
+with open(output_file, 'wb') as f:
+    pickle.dump(dataset, f)
+print(f"The result is stored at '{output_file}'")
+
+
