@@ -7,15 +7,17 @@ import sys
 LOG10 = 2.302585092994046
 
 def rebin_pad(dataframe:pd.DataFrame,
-              lgTime_min:float=1.0, lgTime_max:float=7.0, lgTime_nbins:int=64,
+              lgTime_min:float=1.0, lgTime_max:float=7.0,
+              lgTime_nbins:int=64,
               padding:float=-3.0,
               full_output:bool=False
              )->tuple:
     """
     Applies padded rebinning to a single Swift-XRT lightcurve.
 
-    The rebinning algorithm is designed so that the average count
-    rate in each bin remains unchanged after the rebinning.
+    The resulting lightcurve will be binned uniformly in the log-Time scale
+    The rebinning algorithm is designed so that the average count rate in 
+    each bin remains unchanged after the rebinning.
     
     Parameters
     ----------
