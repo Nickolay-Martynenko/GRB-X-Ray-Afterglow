@@ -308,7 +308,7 @@ def make_dataset(content:dict,
                 full_output=True
             )
         if nBins < minBins:
-            filtered_entries['not enough bins'] += 1
+            filtered_entries['not enough non-empty bins'] += 1
             continue
 
         lgRateLin = masked_interp(
