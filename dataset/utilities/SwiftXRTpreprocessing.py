@@ -986,7 +986,7 @@ def extract_features(dataframe:pd.DataFrame):
     features = dict()
     for func_name in dir(obj):
         func = getattr(obj, func_name)
-        if callable(func) and not func.startswith("__"):
+        if callable(func) and not func_name.startswith("__"):
             output = func()
             if hasattr(func, 'suffix'):
                 for feature, suffix in zip(output, func.suffix):
