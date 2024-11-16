@@ -5,6 +5,61 @@ import pickle
 import sys
 
 LOG10 = 2.302585092994046
+
+def extract_raw(dataframe:pd.DataFrame,
+                apply_log10_Rate:bool=False,
+                full_output:bool=False,
+                apply_log10_Time:bool=False)->tuple:
+    """
+    Extracts relevant lightcurve data from a single Swift-XRT dataframe.
+    The positive and negative errors are symmetrized using their geometric mean.
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        DataFrame with the raw Swift-XRT lightcurve data.
+    apply_log10_Rate : bool, default=False
+        If true, a decimal logarithm is applied to the 
+        source rate data points together with their
+        uncertainties.
+    full_output : bool, default=False
+        If True, (Rate, RateError, Time, TimeError) is returned.
+        Otherwise only (Rate, RateError) is returned.
+    apply_log10_Time : bool, default=False
+        Ignored if `full_output`=False. If `full_output`=True
+        and `apply_log10_Time`=True, then a decimal logarithm
+        is applied to the timestamps together with their
+        uncertainties.
+    
+    Returns
+    -------
+    Rate : np.ndarray
+        1-dimensional array of the source count rate
+        in the original or logarithmic units, depending
+        on `apply_log10_Rate`.
+    RateError : np.ndarray
+        1-dimensional array of the source count rate
+        uncertainty in the original or logarithmic units, 
+        depending on `apply_log10_Rate`.
+    Time : np.ndarray, optional
+        Only returned if full_output is True.
+        1-dimensional array of the timestamps
+        in the original or logarithmic units, 
+        depending on `apply_log10_Time`.
+    TimeError: np.ndarray, optional
+        Only returned if full_output is True.
+        1-dimensional array of the timestamps
+        uncertainties in the original or 
+        logarithmic units, depending on
+        `apply_log10_Time`.
+    """
+    func_Rate = np.log10 if apply_log10_Rate else lambda x: x
+    Rate = 
+    if full_output:
+        target_columns += ['Time', 'TimeNeg', 'TimePos']
+        func_Time = np.log10 if apply_log10_Time else lambda x: x
+    dataframe_fragment = dataframe.loc[:, target_columns].copy()
+    
     
 def rebin_pad(dataframe:pd.DataFrame,
               lgTime_min:float=1.0, lgTime_max:float=7.0,
@@ -110,7 +165,6 @@ def rebin_pad(dataframe:pd.DataFrame,
         return (lgRate, weight, lgTime, num_true_entries)
     else:
         return (lgRate, weight)
-
 
 with open('SwiftXRT_Dataset.pickle', 'rb') as f:
     dataset = pickle.load(f)
