@@ -295,10 +295,34 @@ class FeatureExtractor:
     Median()->float:
         The median magnitude.
     MedianAbsoluteDeviation()->float:
-        Median of the absolute value of the difference between
-        magnitude and the median magnitude.
-
-
+        Median of the absolute value of the difference 
+        between magnitude and the median magnitude.
+    MedianBufferRangePercentage(q:float=0.5)->float:
+        The fraction of data points with the values inside a
+        symmetric interval of +-q/2 * (max(magnitude)-min(magnitude))
+        around the median magnitude.
+    OtsuSplit()->tuple:
+        Otsu threshholding algorithm.
+    PercentAmplitude()->float:
+        Maximum absolute deviation of the magnitude 
+        from its median.
+    PercentDifferenceMagnitudeQuantile(q:float=0.25)->float:
+        The interquantile range-to-median ratio
+        of the magnitude distribution.
+    ReducedChi2()->float:
+        Reduced Chi-Squared test statistic
+        for the magnitude measurements.
+    RobustMedianStatistic()->float:
+        Robust median statistic of the
+        magnitude distribution.
+    Skew()->float:
+        Skewness of magnitude.
+    StandardDeviation()->float:
+        Standard deviation of magnitude.
+    StetsonK()->float:
+        Stetson K coefficient describing lightcurve shape.
+    WeightedMean()->float:
+        Weighted mean magnitude.
     """
     def __init__(self, dataframe:pd.DataFrame):
         """
@@ -670,9 +694,8 @@ class FeatureExtractor:
 
     def MedianBufferRangePercentage(self, q:float=0.5)->float:
         """
-        Returns the fraction of data points 
-        with the values inside the symmetric interval 
-        of +-q/2 * (max(magnitude)-min(magnitude))
+        The fraction of data points with the values inside a
+        symmetric interval of +-q/2 * (max(magnitude)-min(magnitude))
         around the median magnitude.
 
         Parameters
@@ -765,7 +788,7 @@ class FeatureExtractor:
 
     def PercentAmplitude(self)->float:
         """
-        Returns maximum absolute deviation 
+        Maximum absolute deviation 
         of the magnitude from its median.
 
         Parameters
@@ -787,7 +810,7 @@ class FeatureExtractor:
 
     def PercentDifferenceMagnitudeQuantile(self,q:float=0.25)->float:
         """
-        Returns the interquantile range-to-median ratio
+        The interquantile range-to-median ratio
         of the magnitude distribution.
 
         Parameters
@@ -924,7 +947,7 @@ class FeatureExtractor:
 
     def WeightedMean(self)->float:
         """
-        Returns weighted mean magnitude.
+        Weighted mean magnitude.
 
         Parameters
         ----------
