@@ -288,7 +288,7 @@ class FeatureExtractor:
         amplitude : float
             Half-amplitude of magnitude.
         """
-        amplitude = np.ptp(self.magnitude) / 2.0
+        amplitude = np.ptp(self.magnitude).item() / 2.0
         return amplitude
 
     def AndersonDarlingNormal(self)->float:
@@ -301,7 +301,7 @@ class FeatureExtractor:
 
         Returns
         -------
-        adn_stat : float
+        statistic : float
             A.-D. normality test statistic.
             [https://en.wikipedia.org/wiki/Anderson–Darling_test]
         """
@@ -323,7 +323,10 @@ class FeatureExtractor:
                 np.arange(1, 2*N, 2) * np.log(Phi) + 
                 np.arange(2*N-1, 0, -2) * np.log(1.0-Phi)
             )
-        )
+        ).item()
+
+        return statistic
+
 
 
 
