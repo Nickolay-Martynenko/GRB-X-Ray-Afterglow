@@ -280,6 +280,24 @@ class FeatureExtractor:
         Von Neumann Eta tuned for non-uniform timeseries. 
     ExcessVariance()->float:
         The measure of magnitude variability.
+    HuberLinearFit()->tuple:
+        Huber Linear Regression in the log-time scale.
+    InterQuantileRange(q:float=0.25)->float:
+        The range between the quantiles q
+        and 1-q from the magnitude distribution.
+    Kurtosis()->float:
+        The kurtosis of the magnitude distribution.
+    Mean()->float:
+        The mean magnitude.
+    MeanVariance()->float:
+        The standard deviation-to-mean 
+        ratio for the magnitude distribution.
+    Median()->float:
+        The median magnitude.
+    MedianAbsoluteDeviation()->float:
+        Median of the absolute value of the difference between
+        magnitude and the median magnitude.
+
 
     """
     def __init__(self, dataframe:pd.DataFrame):
@@ -480,10 +498,40 @@ class FeatureExtractor:
 
         return excess
 
+    def HuberLinearFit(self)->tuple:
+        """
+        Huber Linear Regression in the log-time scale.
+
+        Uses a default configuration
+        of the sklearn HuberRegressor model 
+        with sample_weight inverse proportional
+        to the squared magnitude errors to 
+        estimate the trend.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        intercept : float
+            The estimated intercept of the trend.
+        slope : float
+            The estimated slope of the trend.
+        """
+
+        X = np.log10(self.timestamps).reshape(-1, 1)
+        y = self.magnitude
+        sample_weight = self.magnitudeErr**(-2)
+        estimator = HuberRegressor().fit(X, y, sample_weight=sample_weight)
+        intercept, slope = estimator.intercept_, estimator.coef_.item()
+
+        return (intercept, slope)
+
     def InterQuantileRange(self, q:float=0.25)->float:
         """
-        Returns the range between the quantiles q
-        and 1-q of the magnitude distribution.
+        The range between the quantiles q
+        and 1-q from the magnitude distribution.
         Quantiles are approximated using the
         closest observation.
 
@@ -511,8 +559,7 @@ class FeatureExtractor:
 
     def Kurtosis(self)->float:
         """
-        Returns the kurtosis of the
-        magnitude distribution.
+        The kurtosis of the magnitude distribution.
 
         Parameters
         ----------
@@ -541,39 +588,9 @@ class FeatureExtractor:
 
         return G2
 
-    def HuberLinearFit(self)->tuple:
-        """
-        Returns the intercept and slope
-        of the magnitude - time decimal logarithm
-        trend. Uses a default configuration
-        of the sklearn HuberRegressor model 
-        with sample_weight inverse proportional
-        to the squared magnitude errors to 
-        estimate the trend.
-
-        Parameters
-        ----------
-        None
-
-        Returns
-        -------
-        intercept : float
-            The estimated intercept of the trend.
-        slope : float
-            The estimated slope of the trend.
-        """
-
-        X = np.log10(self.timestamps).reshape(-1, 1)
-        y = self.magnitude
-        sample_weight = self.magnitudeErr**(-2)
-        estimator = HuberRegressor().fit(X, y, sample_weight=sample_weight)
-        intercept, slope = estimator.intercept_, estimator.coef_.item()
-
-        return (intercept, slope)
-
     def Mean(self)->float:
         """
-        Returns the mean magnitude.
+        The mean magnitude.
 
         Parameters
         ----------
@@ -591,8 +608,8 @@ class FeatureExtractor:
 
     def MeanVariance(self)->float:
         """
-        Returns the standard deviation-to-mean 
-        ratio for the magnitude.
+        The standard deviation-to-mean 
+        ratio for the magnitude distribution.
 
         Parameters
         ----------
@@ -612,7 +629,7 @@ class FeatureExtractor:
 
     def Median(self)->float:
         """
-        Returns the median magnitude.
+        The median magnitude.
 
         Parameters
         ----------
@@ -629,9 +646,8 @@ class FeatureExtractor:
 
     def MedianAbsoluteDeviation(self)->float:
         """
-        Returns median of the absolute value of 
-        the difference between magnitude and the
-        median magnitude.
+        Median of the absolute value of the difference between
+        magnitude and the median magnitude.
 
         Parameters
         ----------
