@@ -243,10 +243,10 @@ class FeatureExtractor:
     https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html
 
     See also: 
-    - DOI:10.1109/tsmc.1979.4310076
     - DOI:10.1051/0004-6361/201323252
     - DOI:10.1086/133808
     - DOI:10.1093/mnras/stw157
+    - DOI:10.1109/tsmc.1979.4310076
     - DOI:10.3847/1538-4357/aa9188
     and references therein.
 
@@ -264,6 +264,23 @@ class FeatureExtractor:
 
     Methods
     -------
+    Amplitude()->float:
+        Half-amplitude of magnitude.
+    AndersonDarlingNormal()->float:
+        Unbiased Anderson–Darling normality test statistic.
+    BeyondNStd(N:float=1.0)->float:
+        The fraction of data points with the 
+        values beyond +-n standard deviations
+        from the mean magnitude.
+    Cusum()->float:
+        Range of cumulative sums.
+    Duration()->float:
+        Timeseries duration.
+    EtaE()->float:
+        Von Neumann Eta tuned for non-uniform timeseries. 
+    ExcessVariance()->float:
+        The measure of magnitude variability.
+
     """
     def __init__(self, dataframe:pd.DataFrame):
         """
@@ -287,7 +304,7 @@ class FeatureExtractor:
 
     def Amplitude(self)->float:
         """
-        Returns half-amplitude of magnitude.
+        Half-amplitude of magnitude.
 
         Parameters
         ----------
@@ -305,7 +322,7 @@ class FeatureExtractor:
 
     def AndersonDarlingNormal(self)->float:
         """
-        Returns unbiased Anderson–Darling normality test statistic.
+        Unbiased Anderson–Darling normality test statistic.
 
         Parameters
         ----------
@@ -322,8 +339,8 @@ class FeatureExtractor:
         assert N >= 4, 'Not enough data to use Anderson-Darling normality test'
         coef = 1 + 4/N - (5/N)**2
 
-        mu = np.mean(self.magnitude)
-        sigma = np.std(self.magnitude, ddof=1)
+        mu = self.Mean()
+        sigma = self.StandardDeviation()
         distribution = (self.magnitude - mu)/sigma
 
         cdf = np.vectorize(lambda x: NormalDist().cdf(x))
@@ -342,9 +359,9 @@ class FeatureExtractor:
 
     def BeyondNStd(self, N:float=1.0)->float:
         """
-        Returns the fraction of data points 
-        with the values beyond +-n standard
-        deviations from the mean magnitude.
+        The fraction of data points with the 
+        values beyond +-n standard deviations
+        from the mean magnitude.
 
         Parameters
         ----------
@@ -359,8 +376,8 @@ class FeatureExtractor:
             deviations from the mean magnitude.
         """
 
-        mu = np.mean(self.magnitude)
-        sigma = np.std(self.magnitude, ddof=1)
+        mu = self.Mean()
+        sigma = self.StandardDeviation()
         fraction = np.mean(
             (
                 np.abs(
@@ -373,7 +390,7 @@ class FeatureExtractor:
 
     def Cusum(self)->float:
         """
-        Returns a range of cumulative sums.
+        Range of cumulative sums.
 
         Parameters
         ----------
@@ -386,7 +403,7 @@ class FeatureExtractor:
             divided by (magnitude stand. dev. * number of timestamps)
         """
 
-        sigma = np.std(self.magnitude, ddof=1)
+        sigma = self.StandardDeviation()
         N = len(self.magnitude)
         cusum_range = (
             np.ptp(np.cumsum(self.magnitude)) / sigma / N
@@ -396,7 +413,7 @@ class FeatureExtractor:
 
     def Duration(self)->float:
         """
-        Returns the timeseries duration.
+        Timeseries duration.
 
         Parameters
         ----------
@@ -414,9 +431,9 @@ class FeatureExtractor:
 
     def EtaE(self)->float:
         """
-        Returns von Neumann Eta tuned for
-        non-uniform timeseries. Probably still
-        unreliable for highly non-uniform timeseries.
+        Von Neumann Eta tuned for non-uniform timeseries. 
+        Probably still unreliable for highly non-uniform
+        timeseries.
 
         Parameters
         ----------
@@ -428,7 +445,7 @@ class FeatureExtractor:
             von Neumann Eta parameter
         """
 
-        sigma = np.std(self.magnitude, ddof=1)
+        sigma = self.StandardDeviation()
         N = len(self.magnitude)
         etaE = (
             self.Duration()**2 * 
@@ -443,8 +460,7 @@ class FeatureExtractor:
 
     def ExcessVariance(self)->float:
         """
-        Returns the measure of
-        the magnitude variability.
+        The measure of magnitude variability.
 
         Parameters
         ----------
@@ -456,8 +472,8 @@ class FeatureExtractor:
             Excess variance parameter.
         """
 
-        mu = np.mean(self.magnitude)
-        sigma = np.std(self.magnitude, ddof=1)
+        mu = self.Mean()
+        sigma = self.StandardDeviation()
         mse = np.mean(self.magnitudeErr**2)
 
         excess = (sigma**2 - mse)/mu**2
@@ -512,8 +528,8 @@ class FeatureExtractor:
         N = len(self.magnitude)
         assert N >= 4, 'Not enough data to calculate kurtosis'
 
-        mu = np.mean(self.magnitude)
-        sigma = np.std(self.magnitude, ddof=1)
+        mu = self.Mean()
+        sigma = self.StandardDeviation()
 
         G2 = (
             N * (N+1) / (N-1) / (N-2) / (N-3) * 
@@ -589,8 +605,8 @@ class FeatureExtractor:
             for the magnitude.
         """
 
-        mu = np.mean(self.magnitude).item()
-        sigma = np.std(self.magnitude, ddof=1).item()
+        mu = self.Mean()
+        sigma = self.StandardDeviation()
 
         return sigma/mu
 
@@ -792,10 +808,8 @@ class FeatureExtractor:
             The reduced Chi-Squared statistic.
         """
 
-        N = length(self.magnitude)
-        average = np.average(
-            self.magnitude, weights=self.magnitudeErr**(-2)
-        )
+        N = len(self.magnitude)
+        average = self.WeightedMean()
         red_chi2 = np.sum(
             (self.magnitude-average)**2 * self.magnitudeErr**(-2)
         ).item() / (N-1)
@@ -817,7 +831,7 @@ class FeatureExtractor:
             The robust median statistic.
         """
 
-        N = length(self.magnitude)
+        N = len(self.magnitude)
         roms = np.sum(
             np.abs(self.magnitude - self.Median()) / self.magnitudeErr
         ).item() / (N-1)
@@ -838,15 +852,82 @@ class FeatureExtractor:
             The sample skewness statistic.
         """
 
-        N = length(self.magnitude)
-        mu = np.mean(self.magnitude)
-        sigma = np.std(self.magnitude, ddof=1)
+        N = len(self.magnitude)
+        mu = self.Mean()
+        sigma = self.StandardDeviation()
 
         G1 = N / (N-1) / (N-2) * np.sum(
             (self.magnitude-mu)**3 / sigma**3
         ).item()
 
         return G1
+
+    def StandardDeviation(self)->float:
+        """
+        Standard deviation of magnitude.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        sigma : float
+            The sample (unbiased) standard deviation.
+        """
+
+        sigma = np.std(self.magnitude, ddof=1)
+
+        return sigma
+
+    def StetsonK(self)->float:
+        """
+        Stetson K coefficient describing lightcurve shape.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        K : float
+            Stetson K coefficient.
+        """
+
+        average = self.WeightedMean()
+        numerator = np.mean(
+            np.abs(self.magnitude-average) / self.magnitudeErr
+        )
+        denominator = np.mean(
+            (self.magnitude-average)**2 / self.magnitudeErr**2
+        )**0.5
+
+        K = (numerator/denominator).item()
+
+        return K
+
+    def WeightedMean(self)->float:
+        """
+        Returns weighted mean magnitude.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        average : float
+            The weighted mean magnitude.
+        """
+
+        average = np.average(
+            self.magnitude, weights=self.magnitudeErr**(-2)
+        ).item()
+
+        return average
+
+
+
 
 
 
