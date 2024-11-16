@@ -23,8 +23,8 @@ def extract_raw(dataframe:pd.DataFrame,
         source rate data points together with their
         uncertainties.
     full_output : bool, default=False
-        If True, (Rate, RateError, Time, TimeError) is returned.
-        Otherwise only (Rate, RateError) is returned.
+        If True, (Rate, RateErr, Time, TimeErr) is returned.
+        Otherwise only (Rate, RateErr) is returned.
     apply_log10_Time : bool, default=False
         Ignored if `full_output`=False. If `full_output`=True
         and `apply_log10_Time`=True, then a decimal logarithm
@@ -37,7 +37,7 @@ def extract_raw(dataframe:pd.DataFrame,
         1-dimensional array of the source count rate
         in the original or logarithmic units, depending
         on `apply_log10_Rate`.
-    RateError : np.ndarray
+    RateErr : np.ndarray
         1-dimensional array of the source count rate
         uncertainty in the original or logarithmic units, 
         depending on `apply_log10_Rate`.
@@ -46,20 +46,35 @@ def extract_raw(dataframe:pd.DataFrame,
         1-dimensional array of the timestamps
         in the original or logarithmic units, 
         depending on `apply_log10_Time`.
-    TimeError: np.ndarray, optional
+    TimeErr: np.ndarray, optional
         Only returned if full_output is True.
         1-dimensional array of the timestamps
         uncertainties in the original or 
         logarithmic units, depending on
         `apply_log10_Time`.
     """
-    func_Rate = np.log10 if apply_log10_Rate else lambda x: x
-    Rate = 
+    Rate = dataframe.loc[:, 'Rate'].values
+    RateErr = (
+        -np.prod(dataframe.loc[:, ['RateNeg', 'RatePos']].values, axis=1)
+    )**0.5
+
+    if apply_log10_Rate:
+        RateErr = RateErr/Rate/LOG10
+        Rate = np.log10(Rate)
+
     if full_output:
-        target_columns += ['Time', 'TimeNeg', 'TimePos']
-        func_Time = np.log10 if apply_log10_Time else lambda x: x
-    dataframe_fragment = dataframe.loc[:, target_columns].copy()
-    
+        Time = dataframe.loc[:, 'Time'].values
+        TimeErr = (
+            -np.prod(dataframe.loc[:, ['TimeNeg', 'TimePos']].values, axis=1)
+        )**0.5
+
+        if apply_log10_Time:
+            TimeErr = TimeErr/Time/LOG10
+            Time = np.log10(Time)
+
+        return (Rate, RateErr, Time, TimeErr)
+    else:
+        return (Rate, RateErr)
     
 def rebin_pad(dataframe:pd.DataFrame,
               lgTime_min:float=1.0, lgTime_max:float=7.0,
