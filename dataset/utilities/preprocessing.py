@@ -311,7 +311,7 @@ def make_dataset(content:dict,
             filtered_entries['not enough bins'] += 1
             continue
 
-        lgRateBinLin = masked_interp(
+        lgRateLin = masked_interp(
             lgTime, lgRatePad,
             weight.astype(bool)
         )
