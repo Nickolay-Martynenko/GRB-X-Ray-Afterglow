@@ -8,7 +8,7 @@ from tqdm import tqdm
 LOG10 = 2.302585092994046
 
 args = sys.argv
-assert len(args) == 3, f'Invalid number of arguments.\nUsage: python3 {args[0]} target_file'
+assert len(args) == 3, f'Invalid number of arguments.\nUsage: python3 {args[0]} target_file output_file'
 target_file, output_file = args[1:]
 
 def extract_raw(dataframe:pd.DataFrame,
