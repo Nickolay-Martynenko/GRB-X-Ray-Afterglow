@@ -111,6 +111,7 @@ def rebin_pad(dataframe:pd.DataFrame,
     else:
         return (lgRate, weight)
 
+
 with open('SwiftXRT_Dataset.pickle', 'rb') as f:
     dataset = pickle.load(f)
 print(rebin_pad(Dataset['GRB 221009A']))
