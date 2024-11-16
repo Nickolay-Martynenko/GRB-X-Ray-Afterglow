@@ -269,5 +269,44 @@ class FeatureExtractor:
         None
         """
         self.magnitude = dataframe['Rate'].apply(np.log10).values
-        self.magnitudeErr = dataframe[]
+        self.magnitudeErr = dataframe['RateErr'].values/dataframe['Rate'].values/LOG10
+        self.timestamps = dataframe['Time'].values
+        assert (np.diff(self.timestamps) > 0).all(), f'Non-ascending timestamps sequence!'
+
+    def Amplitude(self)->float:
+        """
+        Returns half-amplitude of magnitude.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        amplitude : float
+            Half-amplitude of magnitude.
+        """
+        amplitude = np.ptp(self.magnitude) / 2.0
+        return amplitude
+
+    def AndersonDarlingNormal(self)->float:
+        """
+        Returns unbiased Anderson–Darling normality test statistic.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        adn_stat : float
+            A.-D. normality test statistic.
+            [https://en.wikipedia.org/wiki/Anderson–Darling_test]
+        """
+        N = len(self.magnitude)
+        assert N >= 4, 'not enough data to use Anderson-Darling normality test'
+        mu = np.mean(self.magnitude)
+        sigma = np.std(self.magnitude, ddof=1)
+        distribution = (self.magnitude - mu)/sigma
+        
 
