@@ -3,7 +3,9 @@ import os
 import pandas as pd
 import pickle
 import sys
+from statistics import NormalDist
 from tqdm import tqdm
+
 
 LOG10 = 2.302585092994046
 
@@ -304,9 +306,28 @@ class FeatureExtractor:
             [https://en.wikipedia.org/wiki/Anderson–Darling_test]
         """
         N = len(self.magnitude)
-        assert N >= 4, 'not enough data to use Anderson-Darling normality test'
+        assert N >= 4, 'Not enough data to use Anderson-Darling normality test'
+        coef = 1 + 4/N - (5/N)**2
+
         mu = np.mean(self.magnitude)
         sigma = np.std(self.magnitude, ddof=1)
         distribution = (self.magnitude - mu)/sigma
-        
+
+        cdf = np.vectorize(lambda x: NormalDist().cdf(x))
+        Phi = cdf(distribution)
+        assert (
+            (Phi > 0.0) * (Phi < 1.0)
+        ).all(), 'Invalid CDF values found. Anderson-Darling normality test failed'
+
+        statistic = -coef * (N + np.mean(
+                np.arange(1, 2*N, 2) * np.log(Phi) + 
+                np.arange(2*N-1, 0, -2) * np.log(1.0-Phi)
+            )
+        )
+
+
+
+
+
+
 
