@@ -7,7 +7,7 @@ from tqdm import tqdm
 
 args = sys.argv
 assert len(args) == 3, f'Invalid number of arguments.\nUsage: python3 {args[0]} target_directory output_file'
-target_directory, output_file = sys.argv[1:]
+target_directory, output_file = args[1:]
 
 if os.path.isdir(target_directory):
     counter = 0
