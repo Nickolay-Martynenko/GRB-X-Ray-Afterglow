@@ -772,7 +772,7 @@ class FeatureExtractor:
             frac(threshold) * (1-frac(threshold)) * dif(threshold)**2
         )
 
-        thresholds = np.sort(self.magnitude)
+        thresholds = np.sort(self.magnitude)[1:-2]
         opt_threshold = thresholds[
             np.argmax(
                 [goodness(threshold) for threshold in thresholds]
@@ -965,42 +965,6 @@ class FeatureExtractor:
 
         return average
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def extract_features(dataframe:pd.DataFrame)->dict:
     """
     Extract all available features using FeatureExtractor class.
@@ -1015,3 +979,12 @@ def extract_features(dataframe:pd.DataFrame)->dict:
     features : dict
         The dictionary containing extracted features
     """
+
+    obj = FeatureExtractor(dataframe)
+    features = {
+        func: getattr(obj, func)() 
+        for func in dir(obj) 
+        if callable(getattr(obj, func)) and not func.startswith("__")
+    }
+    
+    return features
