@@ -237,8 +237,11 @@ class FeatureExtractor:
     """
     Extracts common-used astrophysical lightcurves features.
 
-    Based on light_curve_feature module, please read the docs:
+    Based on light_curve_feature module:
     https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html
+
+    See also DOI:10.1093/mnras/stw157
+    and references therein.
 
     Attributes
     ----------
@@ -326,6 +329,43 @@ class FeatureExtractor:
         ).item()
 
         return statistic
+
+    def BeyondNStd(self, N:float=1.0)->float:
+        """
+        Returns the fraction of data points 
+        with the values beyond +-n standard
+        deviations from the mean magnitude.
+
+        Parameters
+        ----------
+        N : float, default=1.0
+            Number of standard deviations.
+
+        Returns
+        -------
+        fraction : float
+            The fraction of data points 
+            with the values beyond +-n standard
+            deviations from the mean magnitude.
+        """
+
+        mu = np.mean(self.magnitude)
+        sigma = np.std(self.magnitude, ddof=1)
+        fraction = np.mean(
+            (
+                np.abs(
+                    (self.magnitude - mu)/sigma
+                ) >= N
+            ).astype(float)
+        ).item()
+
+        return fraction
+
+
+
+
+
+
 
 
 
