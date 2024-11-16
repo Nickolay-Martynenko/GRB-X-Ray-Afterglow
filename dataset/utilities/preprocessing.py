@@ -342,7 +342,7 @@ def make_dataset(content:dict,
     print(f'Successfully processed {len(content)} events.')
     print(f'Found {len(dataset)} events satisfying the requirements. Filtered:')
     for reason, num_events in filtered_entries.items():
-        print(f'\t{num_events} events - {reason}')
+        print(f'{num_events} event(s)'.rjust(16)+f' - {reason}')
 
     return dataset
 
