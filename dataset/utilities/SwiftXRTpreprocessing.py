@@ -771,6 +771,84 @@ class FeatureExtractor:
             The interquantile range-to-median ratio.
         """
 
+        iqr = self.InterQuantileRange(q)
+        med = self.Median()
+        ratio = iqr/med
+
+        return ratio
+
+    def ReducedChi2(self)->float:
+        """
+        Reduced Chi-Squared test statistic
+        for the magnitude measurements.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        red_chi2 : float
+            The reduced Chi-Squared statistic.
+        """
+
+        N = length(self.magnitude)
+        average = np.average(
+            self.magnitude, weights=self.magnitudeErr**(-2)
+        )
+        red_chi2 = np.sum(
+            (self.magnitude-average)**2 * self.magnitudeErr**(-2)
+        ).item() / (N-1)
+
+        return red_chi2
+
+    def RobustMedianStatistic(self)->float:
+        """
+        Robust median statistic of the
+        magnitude distribution.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        roms : float
+            The robust median statistic.
+        """
+
+        N = length(self.magnitude)
+        roms = np.sum(
+            np.abs(self.magnitude - self.Median()) / self.magnitudeErr
+        ).item() / (N-1)
+
+        return roms
+
+    def Skew(self)->float:
+        """
+        Skewness of magnitude.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        G1 : float
+            The sample skewness statistic.
+        """
+
+        N = length(self.magnitude)
+        mu = np.mean(self.magnitude)
+        sigma = np.std(self.magnitude, ddof=1)
+
+        G1 = N / (N-1) / (N-2) * np.sum(
+            (self.magnitude-mu)**3 / sigma**3
+        ).item()
+
+        return G1
+
+
 
 
 
