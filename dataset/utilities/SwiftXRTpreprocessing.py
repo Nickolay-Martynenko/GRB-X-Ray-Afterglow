@@ -473,7 +473,7 @@ class FeatureExtractor:
 
         Parameters
         ----------
-        q: float, default=0.25
+        q : float, default=0.25
             The parameter determining the 
             desired range. Default is 
             interquartile interval
@@ -730,6 +730,49 @@ class FeatureExtractor:
         w0 = frac(opt_threshold)
 
         return (opt_threshold, mu_dif, std0, std1, w0)
+
+    def PercentAmplitude(self)->float:
+        """
+        Returns maximum absolute deviation 
+        of the magnitude from its median.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        percent_ampli : float
+            Maximum absolute deviation 
+            of the magnitude from its median.
+        """
+
+        percent_ampli = np.max(
+            np.abs(self.magnitude-self.Median())
+        )
+
+        return percent_ampli
+
+    def PercentDifferenceMagnitudeQuantile(self,q:float=0.25)->float:
+        """
+        Returns the interquantile range-to-median ratio
+        of the magnitude distribution.
+
+        Parameters
+        ----------
+        q : float, default=0.25
+            The parameter determining the 
+            desired range. Default is 
+            interquartile interval
+
+        Returns
+        -------
+        ratio : float
+            The interquantile range-to-median ratio.
+        """
+
+
+
 
 
 
