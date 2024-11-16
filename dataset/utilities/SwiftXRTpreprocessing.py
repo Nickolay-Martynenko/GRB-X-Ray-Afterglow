@@ -965,7 +965,8 @@ class FeatureExtractor:
 
         return average
 
-def extract_features(dataframe:pd.DataFrame)->dict:
+def extract_features(dataframe:pd.DataFrame,
+                     return_array:bool=True):
     """
     Extract all available features using FeatureExtractor class.
 
@@ -973,11 +974,17 @@ def extract_features(dataframe:pd.DataFrame)->dict:
     ----------
     dataframe : pandas.DataFrame
         DataFrame with the raw Swift-XRT lightcurve data.
-
+    return_array : bool, default=True
+        If True, the numpy.array of extracted features is 
+        returned. Otherwise, a dictionary is returned.
     Returns
     -------
-    features : dict
-        The dictionary containing extracted features
+    features : dict, optional
+        The dictionary of extracted features.
+        Only returned if `return_array` is False.
+    features_array : np.ndarray, optional
+        The numpy array of extracted features.
+        Only returned if `return_array` is True.
     """
 
     obj = FeatureExtractor(dataframe)
@@ -986,5 +993,13 @@ def extract_features(dataframe:pd.DataFrame)->dict:
         for func in dir(obj) 
         if callable(getattr(obj, func)) and not func.startswith("__")
     }
-    
-    return features
+
+    if return_array:
+        features_array = np.array([], dtype=np.float32)
+        for feature_name, feature_val in features.items():
+            features_array = np.append(
+                features_array, values=feature_val, dtype=np.float32
+            )
+        return features_array
+    else:
+        return features
