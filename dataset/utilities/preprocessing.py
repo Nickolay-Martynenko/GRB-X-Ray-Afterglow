@@ -23,8 +23,8 @@ def extract_raw(dataframe:pd.DataFrame,
         source rate data points together with their
         uncertainties.
     full_output : bool, default=False
-        If True, (Rate, RateErr, Time, TimeErr) is returned.
-        Otherwise only (Rate, RateErr) is returned.
+        If True, (`Rate`, `RateErr`, `Time`, `TimeErr`) is returned.
+        Otherwise only (`Rate`, `RateErr`) is returned.
     apply_log10_Time : bool, default=False
         Ignored if `full_output`=False. If `full_output`=True
         and `apply_log10_Time`=True, then a decimal logarithm
@@ -42,12 +42,12 @@ def extract_raw(dataframe:pd.DataFrame,
         uncertainty in the original or logarithmic units, 
         depending on `apply_log10_Rate`.
     Time : np.ndarray, optional
-        Only returned if full_output is True.
+        Only returned if `full_output` is True.
         1-dimensional array of the timestamps
         in the original or logarithmic units, 
         depending on `apply_log10_Time`.
     TimeErr: np.ndarray, optional
-        Only returned if full_output is True.
+        Only returned if `full_output` is True.
         1-dimensional array of the timestamps
         uncertainties in the original or 
         logarithmic units, depending on
@@ -115,9 +115,9 @@ def rebin_pad(dataframe:pd.DataFrame,
         that is, 10^{-3} s^{-1}. Otherwise, the 
         original units of s^{-1} are preserved.
     full_output : bool, default=False
-        If True, return (lgRate, weight, lgTime, num_true_entries),
-        where num_true_entries is a number of non-empty bins in the 
-        rebinned lightcurve. Otherwise only (lgRate, weight) is returned.
+        If True, return (`lgRate`, `weight`, `lgTime`, `num_true_entries`),
+        where `num_true_entries` is a number of non-empty bins in the 
+        rebinned lightcurve. Otherwise only (`lgRate`, `weight`) is returned.
         
     Returns
     -------
@@ -126,16 +126,16 @@ def rebin_pad(dataframe:pd.DataFrame,
         source count rate rebinned decimal logarithm
     weight : np.ndarray
         Array of shape (lgTime_nbins,) of the
-        estimated inverse squared lgRate errors. 
+        estimated inverse squared `lgRate` errors. 
         For the empty bins, a weight of 0.0 is assigned
     lgTime : np.ndarray, optional
-        Only returned if full_output is True. Array of
+        Only returned if `full_output` is True. Array of
         shape (lgTime_nbins,) of the bin centers, in the
         units of decimal logarithm of time in seconds 
     num_true_entries: int, optional
-        Only returned if full_output is True. Number of 
+        Only returned if `full_output` is True. Number of 
         non-empty bins in the rebinned lightcurve.
-        Equivalent to sum(weight.astype(bool)) 
+        Equivalent to `sum(weight.astype(bool))` 
     """
     bin_edges = np.linspace(lgTime_min, lgTime_max, lgTime_nbins+1)
     lgRate = np.zeros(lgTime_nbins)
@@ -180,6 +180,39 @@ def rebin_pad(dataframe:pd.DataFrame,
         return (lgRate, weight, lgTime, num_true_entries)
     else:
         return (lgRate, weight)
+
+def masked_interp(timegrid:np.ndarray,
+                  colllection:np.ndarray,
+                  mask:np.ndarray)->np.ndarray:
+    """
+    Linear interpolation of a padded collection of time series.
+
+    Parameters
+    ----------
+    timegrid : np.ndarray
+        1-dimensional array, the common time grid
+        for the collection of arrays `colllection`
+    collection : np.ndarray
+        2-dimensional array of shape (n_samples, n_timestamps),
+        where n_timestamps is the length of `timegrid`.
+        A collection of n_samples timeseries to be interpolated.
+    mask : np.ndarray
+        2-dimensional boolean array of shape 
+        (n_samples, n_timestamps). True entries 
+        denote the values to be used for interpolation.
+
+    Returns
+    -------
+    interpolated_collection : np.ndarray
+        2-dimensional array of shape (n_samples, n_timestamps),
+        An interpolated collection of timeseries.
+    """
+    interpolated_collection = np.zeros_like(colllection)
+    for i, (timeseries, mask) in enumerate(zip(collection, mask)):
+        interpolated_collection[i] = np.interp(
+            timegrid, timegrid[mask], timeseries[mask]
+        )
+    return interpolated_collection
 
 with open('SwiftXRT_Dataset.pickle', 'rb') as f:
     dataset = pickle.load(f)
