@@ -5,7 +5,7 @@ import pickle
 import sys
 
 LOG10 = 2.302585092994046
-
+    
 def rebin_pad(dataframe:pd.DataFrame,
               lgTime_min:float=1.0, lgTime_max:float=7.0,
               lgTime_nbins:int=64,
@@ -73,7 +73,7 @@ def rebin_pad(dataframe:pd.DataFrame,
                   
     lgTimeOrig = dataframe['Time'].apply(np.log10).values
 
-	for bin_index in range(lgTime_nbins):
+    for bin_index in range(lgTime_nbins):
         mask = (lgTimeOrig >= bin_edges[bin_index]) * (lgTimeOrig < bin_edges[bin_index+1])
         dataframe_fragment = dataframe.loc[mask, ['Time', 'Rate', 'RateNeg', 'RatePos']].copy()
         
@@ -84,11 +84,11 @@ def rebin_pad(dataframe:pd.DataFrame,
                     0.5 * (lgTimeOrig[mask][1:] + lgTimeOrig[mask][:-1]),
                     bin_edges[np.newaxis, bin_index+1]
                 )
-			)
-		)
-		integral = np.sum(
-				dataframe_fragment['Rate'].values * np.diff(local_grid)
-		).item()
+            )
+        )
+        integral = np.sum(
+                dataframe_fragment['Rate'].values * np.diff(local_grid)
+        ).item()
         flag = integral > 0.0
         lgRate[bin_index] = np.log10(integral / np.ptp(local_grid)) if flag else padding
         weight[bin_index] = (LOG10 * integral / 
@@ -108,7 +108,7 @@ def rebin_pad(dataframe:pd.DataFrame,
         lgTime = 0.5 * (bin_edges[1:] + bin_edges[:-1]) 
         num_true_entries = sum(weight.astype(bool))
         return (lgRate, weight, lgTime, num_true_entries)
-	else:
+    else:
         return (lgRate, weight)
 
 with open('SwiftXRT_Dataset.pickle', 'rb') as f:
