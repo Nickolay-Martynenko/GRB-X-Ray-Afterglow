@@ -9,7 +9,7 @@ LOG10 = 2.302585092994046
 def rebin_pad(dataframe:pd.DataFrame,
               lgTime_min:float=1.0, lgTime_max:float=7.0,
               lgTime_nbins:int=64,
-              padding:float=-3.0,
+              padding:float=-3.0, subtract_background:bool=True,
               full_output:bool=False
              )->tuple:
     """
@@ -32,9 +32,18 @@ def rebin_pad(dataframe:pd.DataFrame,
     lgTime_nbins : int, default=64
         Number of bins (i.e. the number of bin edges - 1).
     padding : float, default=-3.0
-        The value assigned to empty bins. Default value is
-        approximately a decimal logarithm of the typical 
-        X-Ray background count rate.
+        The value initially assigned to empty bins.
+        Default value is approximately a decimal 
+        logarithm of the typical X-Ray background 
+        count rate. If `subtract_background` is True,
+        then the default padded entries would be
+        mapped to 0.0 after background subtraction.
+    subtract_background : bool, default=True
+        Whether to subtract background. If True,
+        the preprocessed count rate would be in
+        the units of average background count rate,
+        that is, 10^{-3} s^{-1}. Otherwise, the 
+        original units of s^{-1} are preserved.
     full_output : bool, default=False
         If True, return (lgRate, weight, lgTime, num_true_entries),
         where num_true_entries is a number of non-empty bins in the 
@@ -92,7 +101,9 @@ def rebin_pad(dataframe:pd.DataFrame,
                                  )**0.5 * np.diff(local_grid)
                              ).item()
         )**2 if flag else 0.0
-    
+
+    if subtract_background:
+        lgRate += 3.0
     if full_output:
         lgTime = 0.5 * (bin_edges[1:] + bin_edges[:-1]) 
         num_true_entries = sum(weight.astype(bool))
