@@ -551,6 +551,7 @@ class FeatureExtractor:
         intercept, slope = estimator.intercept_, estimator.coef_.item()
 
         return (intercept, slope)
+    HuberLinearFit.suffix = ['intercept', 'slope']
 
     def InterQuantileRange(self, q:float=0.25)->float:
         """
@@ -785,6 +786,7 @@ class FeatureExtractor:
         w0 = frac(opt_threshold)
 
         return (opt_threshold, mu_dif, std0, std1, w0)
+    OtsuSplit.suffix = ['opt_threshold', 'mu_dif', 'std0', 'std1', 'w0']
 
     def PercentAmplitude(self)->float:
         """
@@ -965,8 +967,7 @@ class FeatureExtractor:
 
         return average
 
-def extract_features(dataframe:pd.DataFrame,
-                     return_array:bool=True):
+def extract_features(dataframe:pd.DataFrame):
     """
     Extract all available features using FeatureExtractor class.
 
@@ -974,32 +975,24 @@ def extract_features(dataframe:pd.DataFrame,
     ----------
     dataframe : pandas.DataFrame
         DataFrame with the raw Swift-XRT lightcurve data.
-    return_array : bool, default=True
-        If True, the numpy.array of extracted features is 
-        returned. Otherwise, a dictionary is returned.
     Returns
     -------
     features : dict, optional
         The dictionary of extracted features.
         Only returned if `return_array` is False.
-    features_array : np.ndarray, optional
-        The numpy array of extracted features.
-        Only returned if `return_array` is True.
     """
 
     obj = FeatureExtractor(dataframe)
-    features = {
-        func: getattr(obj, func)() 
-        for func in dir(obj) 
-        if callable(getattr(obj, func)) and not func.startswith("__")
-    }
+    features = dict()
+    for func_name in dir(obj):
+        func = getattr(obj, func_name)
+        if callable(func) and not func.startswith("__"):
+            output = func()
+            if hasattr(func, 'suffix'):
+                for feature, suffix in zip(output, func.suffix):
+                    features['_'.join([func_name, suffix])] = feature
+            else:
+                features[func_name] = output
+    return features
 
-    if return_array:
-        features_array = np.array([], dtype=np.float32)
-        for feature_name, feature_val in features.items():
-            features_array = np.append(
-                features_array, values=feature_val, dtype=np.float32
-            )
-        return features_array
-    else:
-        return features
+def make_dataset(SwiftXRTdict:dict,)
