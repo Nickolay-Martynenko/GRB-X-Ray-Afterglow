@@ -574,9 +574,9 @@ class FeatureExtractor:
         """
 
         iqr = (
-            np.quantile(self.magnitude, q,
-                method='closest_observation')-
             np.quantile(self.magnitude, 1-q,
+                method='closest_observation')-
+            np.quantile(self.magnitude, q,
                 method='closest_observation')
         ).item()
 
