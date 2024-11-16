@@ -240,7 +240,10 @@ class FeatureExtractor:
     Based on light_curve_feature module:
     https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html
 
-    See also DOI:10.1093/mnras/stw157
+    See also: 
+    - DOI:10.1051/0004-6361/201323252
+    - DOI:10.1093/mnras/stw157
+    - DOI:10.3847/1538-4357/aa9188
     and references therein.
 
     Attributes
@@ -360,6 +363,144 @@ class FeatureExtractor:
         ).item()
 
         return fraction
+
+    def Cusum(self)->float:
+        """
+        Returns a range of cumulative sums.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        cusum_range : float
+            max(cumulative sum) - min(cumulative sum)
+            divided by (magnitude stand. dev. * number of timestamps)
+        """
+        sigma = np.std(self.magnitude, ddof=1)
+        n_timestamps = len(self.magnitude)
+        cusum_range = (
+            np.ptp(np.cumsum(self.magnitude)) / sigma / n_timestamps
+        ).item()
+
+        return cusum_range
+
+    def Duration(self)->float:
+        """
+        Returns the timeseries duration.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        duration : float
+            last timestamp - first timestamp
+        """
+        duration = self.timestamps[-1] - self.timestamps[0]
+
+        return duration
+
+    def EtaE(self)->float:
+        """
+        Returns von Neumann Eta tuned for
+        non-uniform timeseries. Probably still
+        unreliable for highly non-uniform timeseries.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        etaE : float
+            von Neumann Eta parameter
+        """
+
+        sigma = np.std(self.magnitude, ddof=1)
+        n_timestamps = len(self.magnitude)
+        etaE = (
+            self.Duration()**2 * 
+            np.mean(
+                (
+                    np.diff(self.magnitude)/np.diff(self.timestamps)
+                )**2
+            ) / sigma**2 / (n_timestamps-1)**2
+        ).item()
+
+        return etaE
+
+    def ExcessVariance(self)->float:
+        """
+        Returns the measure of
+        the magnitude variability.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        excess : float
+            Excess variance parameter.
+        """
+        mu = np.mean(self.magnitude)
+        sigma = np.std(self.magnitude, ddof=1)
+        mse = np.mean(self.magnitudeErr**2)
+
+        excess = (sigma**2 - mse)/mu**2
+
+        return excess
+
+    def InterQuantileRange(self, q:float=0.25)->float:
+        """
+        Returns the range between the quantiles q
+        and 1-q of the magnitude distribution.
+        Quantiles are approximated using the
+        closest observation.
+
+        Parameters
+        ----------
+        q: float, default=0.25
+            The parameter determining the 
+            desired range. Default is 
+            interquartile interval
+
+        Returns
+        -------
+        iqr : float
+            The interquantile range.
+        """
+
+        iqr = (
+            np.quantile(self.magnitude, q,
+                method='closest_observation')-
+            np.quantile(self.magnitude, 1-q,
+                method='closest_observation')
+        ).item()
+
+        return iqr
+
+    def Kurtosis(self)->float:
+        """
+        Returns the kurtosis of the
+        magnitude distribution.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        kurtosis : float
+            The kurtosis of the
+            magnitude distribution.
+        """
+        
+
+
 
 
 
