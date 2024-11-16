@@ -126,8 +126,7 @@ def rebin(dataframe:pd.DataFrame,
           lgTime_min:float=1.0, lgTime_max:float=7.0,
           lgTime_nbins:int=64,
           regime:str='padding', padding:float=-3.0,
-          subtract_background:bool=True,
-          full_output:bool=False
+          subtract_background:bool=True
     )->tuple:
     """
     Applies rebinning to a single Swift-XRT lightcurve.
@@ -174,16 +173,17 @@ def rebin(dataframe:pd.DataFrame,
         
     Returns
     -------
-    lgRate : np.ndarray
-        Array of shape (lgTime_nbins,) of the 
-        source count rate rebinned decimal logarithm
-    weight : np.ndarray
-        Array of shape (lgTime_nbins,) of the
-        estimated inverse squared `lgRate` errors. 
-        For the empty bins, a weight of 0.0 is assigned
-    lgTime : np.ndarray
-        Array of shape (lgTime_nbins,) of the bin centers, 
-        in the units of decimal logarithm of time in seconds 
+    rebinned : dict
+        rebinned['lgRate'] : np.ndarray
+            Array of shape (lgTime_nbins,) of the 
+            source count rate rebinned decimal logarithm
+        rebinned['weight'] : np.ndarray
+            Array of shape (lgTime_nbins,) of the
+            estimated inverse squared `lgRate` errors. 
+            For the empty bins, a weight of 0.0 is assigned
+        rebinned['lgTime'] : np.ndarray
+            Array of shape (lgTime_nbins,) of the bin centers, 
+            in the units of decimal logarithm of time in seconds
     """
     assert regime in ['padding',
         'linear_interpolation'], f"Unknown rebinning regime: '{regime}'"
@@ -231,9 +231,15 @@ def rebin(dataframe:pd.DataFrame,
     if subtract_background:
         lgRate += 3.0
     if regime=='linear_interpolation':
-        mask = weight.astype(bool)
+        mask = (weight > 0.0)
         lgRate = np.interp(lgTime, lgTime[mask], lgRate[mask])
-    return (lgRate, weight, lgTime)
+
+    rebinned = {
+        'lgRate': lgRate,
+        'weight': weight,
+        'lgTime': lgTime
+    }
+    return rebinned
 
 class FeatureExtractor:
     """
@@ -995,4 +1001,4 @@ def extract_features(dataframe:pd.DataFrame):
                 features[func_name] = output
     return features
 
-def make_dataset(SwiftXRTdict:dict,)
+def make_dataset(SwiftXRTdict:dict)
