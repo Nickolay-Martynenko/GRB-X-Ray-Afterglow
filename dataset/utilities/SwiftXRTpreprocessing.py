@@ -999,3 +999,19 @@ class FeatureExtractor:
 
 
 
+
+
+def extract_features(dataframe:pd.DataFrame)->dict:
+    """
+    Extract all available features using FeatureExtractor class.
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        DataFrame with the raw Swift-XRT lightcurve data.
+
+    Returns
+    -------
+    features : dict
+        The dictionary containing extracted features
+    """
