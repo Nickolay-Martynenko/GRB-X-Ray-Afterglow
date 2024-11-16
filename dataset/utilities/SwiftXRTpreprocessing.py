@@ -243,6 +243,7 @@ class FeatureExtractor:
 
     See also: 
     - DOI:10.1051/0004-6361/201323252
+    - DOI:10.1086/133808
     - DOI:10.1093/mnras/stw157
     - DOI:10.3847/1538-4357/aa9188
     and references therein.
@@ -557,7 +558,7 @@ class FeatureExtractor:
         mu : float
             The mean magnitude.
         """
-        mu = np.mean(self.magnitude)
+        mu = np.mean(self.magnitude).item()
         return mu
 
     def MeanVariance(self)->float:
@@ -575,11 +576,52 @@ class FeatureExtractor:
             Standard deviation-to-mean ratio 
             for the magnitude.
         """
-        mu = np.mean(self.magnitude)
-        sigma = np.std(self.magnitude, ddof=1)
+        mu = np.mean(self.magnitude).item()
+        sigma = np.std(self.magnitude, ddof=1).item()
         return sigma/mu
 
-    
+    def Median(self)->float:
+        """
+        Returns the median magnitude.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        med : float
+            The median magnitude.
+        """
+        med = np.median(self.magnitude).item()
+        return med
+
+    def MedianAbsoluteDeviation(self)->float:
+        """
+        Returns median of the absolute value of 
+        the difference between magnitude and the
+        median magnitude.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        med_abs_dev : float
+            Median of the absolute value of 
+            the difference between magnitude 
+            and its median.
+        """
+
+        med = self.Median()
+        med_abs_dev = np.median(
+            np.abs(self.magnitude - med)
+        ).item()
+        return med_abs_dev
+
+
+
 
 
 
