@@ -4,6 +4,7 @@ import pandas as pd
 import pickle
 import sys
 from statistics import NormalDist
+from sklearn.model_selection import train_test_split
 from sklearn.linear_model import HuberRegressor
 from tqdm import tqdm
 
@@ -242,6 +243,7 @@ class FeatureExtractor:
     https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html
 
     See also: 
+    - DOI:10.1109/tsmc.1979.4310076
     - DOI:10.1051/0004-6361/201323252
     - DOI:10.1086/133808
     - DOI:10.1093/mnras/stw157
@@ -296,7 +298,9 @@ class FeatureExtractor:
         amplitude : float
             Half-amplitude of magnitude.
         """
+
         amplitude = np.ptp(self.magnitude).item() / 2.0
+
         return amplitude
 
     def AndersonDarlingNormal(self)->float:
@@ -313,6 +317,7 @@ class FeatureExtractor:
             A.-D. normality test statistic.
             [https://en.wikipedia.org/wiki/Anderson–Darling_test]
         """
+
         N = len(self.magnitude)
         assert N >= 4, 'Not enough data to use Anderson-Darling normality test'
         coef = 1 + 4/N - (5/N)**2
@@ -380,6 +385,7 @@ class FeatureExtractor:
             max(cumulative sum) - min(cumulative sum)
             divided by (magnitude stand. dev. * number of timestamps)
         """
+
         sigma = np.std(self.magnitude, ddof=1)
         N = len(self.magnitude)
         cusum_range = (
@@ -401,6 +407,7 @@ class FeatureExtractor:
         duration : float
             last timestamp - first timestamp
         """
+
         duration = self.timestamps[-1] - self.timestamps[0]
 
         return duration
@@ -448,6 +455,7 @@ class FeatureExtractor:
         excess : float
             Excess variance parameter.
         """
+
         mu = np.mean(self.magnitude)
         sigma = np.std(self.magnitude, ddof=1)
         mse = np.mean(self.magnitudeErr**2)
@@ -538,11 +546,13 @@ class FeatureExtractor:
         slope : float
             The estimated slope of the trend.
         """
+
         X = np.log10(self.timestamps).reshape(-1, 1)
         y = self.magnitude
         sample_weight = self.magnitudeErr**(-2)
-        fitted = HuberRegressor().fit(X, y, sample_weight=sample_weight)
-        intercept, slope = fitted.intercept_, fitted.coef_.item()
+        estimator = HuberRegressor().fit(X, y, sample_weight=sample_weight)
+        intercept, slope = estimator.intercept_, estimator.coef_.item()
+
         return (intercept, slope)
 
     def Mean(self)->float:
@@ -558,7 +568,9 @@ class FeatureExtractor:
         mu : float
             The mean magnitude.
         """
+
         mu = np.mean(self.magnitude).item()
+
         return mu
 
     def MeanVariance(self)->float:
@@ -576,8 +588,10 @@ class FeatureExtractor:
             Standard deviation-to-mean ratio 
             for the magnitude.
         """
+
         mu = np.mean(self.magnitude).item()
         sigma = np.std(self.magnitude, ddof=1).item()
+
         return sigma/mu
 
     def Median(self)->float:
@@ -594,6 +608,7 @@ class FeatureExtractor:
             The median magnitude.
         """
         med = np.median(self.magnitude).item()
+
         return med
 
     def MedianAbsoluteDeviation(self)->float:
@@ -618,7 +633,108 @@ class FeatureExtractor:
         med_abs_dev = np.median(
             np.abs(self.magnitude - med)
         ).item()
+
         return med_abs_dev
+
+    def MedianBufferRangePercentage(self, q:float=0.5)->float:
+        """
+        Returns the fraction of data points 
+        with the values inside the symmetric interval 
+        of +-q/2 * (max(magnitude)-min(magnitude))
+        around the median magnitude.
+
+        Parameters
+        ----------
+        q : float, default=0.5
+            The width of the interquantile interval.
+
+        Returns
+        -------
+        fraction : float
+            The fraction of data points with
+            the values inside the symmetric interval 
+            of +-q/2 * (max(magnitude)-min(magnitude))
+            around the median magnitude.
+        """
+
+        med = self.Median()
+        width = q * np.ptp(self.magnitude) / 2
+
+        fraction = np.mean(
+            (
+                np.abs(self.magnitude-med) < width
+            ).astype(float)
+        ).item()
+
+        return fraction
+
+    def OtsuSplit(self)->tuple:
+        """
+        Otsu threshholding algorithm.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        opt_threshold : float
+            The optimal Otsu threshold 
+            maximizing w0 * w1 * (mu1 - mu0)**2,
+            where w0 and w1 are the fractions
+            of observations belonging to 
+            subsets 0 and 1, respectively,
+            mu0 and mu1 are the subset means.
+
+        mu_dif : float
+            Difference of subset means.
+
+        std0 : float
+            Standard deviation of the lower subset.
+
+        std1 : float
+            Standard deviation of the upper subset.
+
+        w0 : float
+            Lower-to-all observation count ratio.
+        """
+
+        N = len(self.magnitude)
+        assert N >= 2, 'Not enough data for Otsu Split'
+
+        frac = lambda threshold: (
+            np.mean(
+                self.magnitude <= threshold
+            ).astype(float)
+        ).item()
+
+        dif = lambda threshold: (
+            np.mean(self.magnitude[self.magnitude > threshold]) - 
+            np.mean(self.magnitude[self.magnitude <= threshold])
+        ).item()
+
+        goodness = lambda threshold: (
+            frac(threshold) * (1-frac(threshold)) * dif(threshold)**2
+        )
+
+        thresholds = np.sort(self.magnitude)
+        opt_threshold = thresholds[
+            np.argmax(
+                [goodness(threshold) for threshold in thresholds]
+            )
+        ]
+
+        mu_dif = dif(opt_threshold)
+        std0 = np.std(self.magnitude[self.magnitude <= opt_threshold])
+        std1 = np.std(self.magnitude[self.magnitude > opt_threshold])
+        w0 = frac(opt_threshold)
+
+        return (opt_threshold, mu_dif, std0, std1, w0)
+
+
+
+
+
 
 
 
