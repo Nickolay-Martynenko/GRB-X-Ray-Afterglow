@@ -60,10 +60,10 @@ def train_val_test_downloader(
     train, val, test : pandas.DataFrames
         Dataframes downloaded from the repository
     labels : pandas.DataFrame, optional
-        Only returned if load_labels=True.
+        Only returned if `load_labels`=True.
         Swift analysis data.
     """
-    
+    shutil.rmtree('./tmp', ignore_errors=True)
     os.mkdir('./tmp')
     
     train_url = PARENT_DIR_URL+f'train/{dataset_name}.csv'
@@ -92,7 +92,11 @@ def train_val_test_downloader(
         labels_url = PARENT_DIR_URL+'GRBtable.csv'
         subprocess.run(['curl', '-o', './tmp/labels.csv', '-s',
                         '--show-error', f'{labels_url}'])
-        labels = pd.read_csv('./tmp/labels.csv', index_col=0)
+        labels = pd.read_csv('./tmp/labels.csv',
+            index_col=0, delimiter=';', header=0)
+        labels.replace({'N/A ': pd.NaT}, inplace=True)
+        labels['Flares'] = labels['Flares'].apply(literal_eval)
+        labels['FlaresFlag'] = labels['Flares'].astype(bool).astype(int)
         index = np.hstack((train.index, val.index, test.index))
         labels = labels.loc[index, :]
     
