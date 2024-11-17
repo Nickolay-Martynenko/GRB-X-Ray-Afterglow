@@ -1117,9 +1117,13 @@ def make_dataset(SwiftXRTdict:dict,
                  criterion:callable=complete_lightcurve,
                  preprocesser:callable=extract_features,
                  preprocesser_kwargs:dict=None,
-    )->dict:
+                 random_state:int=2024,
+    )->tuple:
     """
     Produces dataset from the raw SwiftXRT data utilizing preprocesser.
+    The train-val-test split procedure is designed in order to preserve
+    the original distribution by the year of detection. This allows to
+    avoid some undesired instrumental and local signatures in the data.
 
     Parameters
     ----------
@@ -1136,11 +1140,17 @@ def make_dataset(SwiftXRTdict:dict,
         information.
     preprocesser_kwargs : dict, default=None
         Optional keyword arguments to be passed to preprocesser.
+    random_state : int, default=2024
+        Random state used in the train-val-test split.
 
     Returns
     -------
-    dataset : dict
-        The preprocessed and filtered dataset.
+    train : pd.DataFrame
+        Training fragment of the dataset.
+    val : pd.DataFrame
+        Validation fragment of the dataset.
+    test : pd.DataFrame
+        Test fragment of the dataset.
     """
 
     dataset = dict()
@@ -1160,4 +1170,17 @@ def make_dataset(SwiftXRTdict:dict,
         f'Preprocessing algorithm used: `{preprocesser.__name__}`(...)'
     )
 
-    return dataset
+    dataset = pd.DataFrame.from_dict(dataset).T.sort_index(axis=0)
+    train, val_test = train_test_split(
+        dataset,
+        random_state=random_state,
+        test_size=0.3,
+        stratify=dataset['year']
+    )
+    val, test = train_test_split(
+        val_test,
+        random_state=random_state,
+        test_size=0.5,
+        stratify=val_test['year']
+    )
+    return (train, val, test)
