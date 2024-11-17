@@ -1117,14 +1117,15 @@ def extract_features(dataframe:pd.DataFrame)->dict:
 
 def make_dataset(SwiftXRTdict:dict, preprocesser:callable=extract_features)->dict:
     dataset = dict()
-    for event_name, dataframe in SwiftXRTdict.items():
+    print('[Making Dataset]')
+    for event_name, dataframe in tqdm(SwiftXRTdict.items()):
         if complete_lightcurve(dataframe):
             year = get_year(event_name)
             preprocessed = preprocesser(dataframe)
             dataset[event_name] = preprocessed
         else:
             continue
+    print(f'Successfully preprocessed {len(SwiftXRTdict)} lightcurves.')
+    print(f'Complete lightcurves found: {len(dataset)}. '+
+        f'Preprocessing utility used: {preprocesser.__name__}')
     return dataset
-
-print(len(make_dataset(read_SwiftXRT('SwiftXRT'))))
-
