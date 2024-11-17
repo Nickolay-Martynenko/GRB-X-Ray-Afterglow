@@ -2,7 +2,6 @@ import os
 import re
 import numpy as np
 import pandas as pd
-import pickle
 from statistics import NormalDist
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import HuberRegressor
@@ -1183,4 +1182,5 @@ def make_dataset(SwiftXRTdict:dict,
         test_size=0.5,
         stratify=val_test['year']
     )
+    train.name, val.name, test.name = 'train', 'val', 'test'
     return (train, val, test)
