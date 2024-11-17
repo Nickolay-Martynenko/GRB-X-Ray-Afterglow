@@ -166,7 +166,7 @@ def complete_lightcurve(dataframe:pd.DataFrame,
         flag = False
         return flag
     else:
-        hist, _ = np.hist(
+        hist, _ = np.histogram(
             timeseries,
             bins=np.linspace(*bins)
         )
