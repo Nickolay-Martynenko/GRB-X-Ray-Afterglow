@@ -131,10 +131,10 @@ def rebin(dataframe:pd.DataFrame,
     """
     Applies rebinning to a single Swift-XRT lightcurve.
 
-    The resulting lightcurve will be binned uniformly in 
-    the log-Time scale. The rebinning algorithm is designed 
-    so that the average count rate in each bin remains unchanged 
-    after the rebinning.
+    If regime is not 'none', the resulting lightcurve will 
+    be binned uniformly in the log-Time scale. The rebinning 
+    algorithm is designed so that the average count rate in 
+    each bin remains unchanged after the rebinning.
     
     Parameters
     ----------
@@ -142,22 +142,27 @@ def rebin(dataframe:pd.DataFrame,
         DataFrame with the raw Swift-XRT lightcurve data.
     lgTime_min : float, default=1.0
         Decimal logarithm of the target time bin edges
-        starting point (in seconds).
+        starting point (in seconds). Ignored if `regime`='none'.
     lgTime_max : float, default=7.0
         Decimal logarithm of the target time bin edges
-        end point (in seconds).
+        end point (in seconds). Ignored if `regime`='none'.
     lgTime_nbins : int, default=64
         Number of bins (i.e. the number of bin edges - 1).
+        Ignored if `regime`='none'.
     regime : str, default='padding'
-        There are two available regimes of rebinning:
-        'padding' and 'linear_interpolation'. In the 'padding'
-        regime, the rebinned lightcurve is padded with a value
-        controlled by `padding` parameter. In the 
-        'linear_interpolation' regime, the missing 
-        values are interpolated linearly based on 
-        the source count rate in the nearest non-empty bins.
+        There are three available regimes of rebinning:
+        'padding', 'linear_interpolation' and 'none'.
+            - 'padding': the rebinned lightcurve is 
+            padded with a value controlled 
+            by `padding` parameter.
+            - 'linear_interpolation': the missing 
+            values are interpolated linearly based on 
+            the source count rate in the nearest non-empty bins.
+            - 'none': only decimal logarithm is applied
+            to the original timeseries and timestamps without
+            rebinning to a uniform grid.
     padding : float, default=-3.0
-        Ignored if `regime` is 'linear_interpolation'.
+        Ignored if `regime` is not 'padding'.
         The value initially assigned to empty bins.
         Default value is approximately a decimal 
         logarithm of the typical X-Ray background 
@@ -175,26 +180,34 @@ def rebin(dataframe:pd.DataFrame,
     -------
     rebinned : dict
         rebinned['lgRate'] : np.ndarray
-            Array of shape (lgTime_nbins,) of the 
-            source count rate rebinned decimal logarithm
+            The (rebinned) source count rate decimal logarithm.
         rebinned['weight'] : np.ndarray
-            Array of shape (lgTime_nbins,) of the
-            estimated inverse squared `lgRate` errors. 
-            For the empty bins, a weight of 0.0 is assigned
+            The estimated inverse squared `lgRate` errors. 
+            For the empty bins, a weight of 0.0 is assigned.
         rebinned['lgTime'] : np.ndarray
-            Array of shape (lgTime_nbins,) of the bin centers, 
-            in the units of decimal logarithm of time in seconds
+            The bin centers, in the units of decimal logarithm 
+            of time in seconds if `regime` is not 'none'.
+            Otherwise, decimal logarithm of the original timestamps.
     """
-    assert regime in ['padding',
-        'linear_interpolation'], f"Unknown rebinning regime: '{regime}'"
+    assert regime in [
+        'padding',
+        'linear_interpolation',
+        'none'
+    ], f"Unknown rebinning regime: '{regime}'"
+
+    lgTimeOrig = dataframe['Time'].apply(np.log10).values
+    if regime=='none':
+        lgRate = dataframe['Rate'].apply(np.log10).values
+        if subtract_background:
+            lgRate += 3.0
+        lgRateErr 
+
     padding = padding if regime=='padding' else 0.0
 
     bin_edges = np.linspace(lgTime_min, lgTime_max, lgTime_nbins+1)
     lgTime = 0.5 * (bin_edges[1:] + bin_edges[:-1]) 
     lgRate = np.zeros(lgTime_nbins)
     weight = np.zeros(lgTime_nbins)
-                  
-    lgTimeOrig = dataframe['Time'].apply(np.log10).values
 
     for bin_index in range(lgTime_nbins):
         mask = (
