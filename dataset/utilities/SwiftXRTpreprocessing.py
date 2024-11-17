@@ -93,7 +93,7 @@ def read_SwiftXRT(directory:str,
                             TimeErr = (
                                 -np.prod(
                                     dataframe[
-                                        'TimePos', 'TimeNeg'
+                                        ['TimePos', 'TimeNeg']
                                     ].values,
                                     axis=1
                                 )
@@ -101,12 +101,12 @@ def read_SwiftXRT(directory:str,
                             RateErr = (
                                 -np.prod(
                                     dataframe[
-                                        'RatePos', 'RateNeg'
+                                        ['RatePos', 'RateNeg']
                                     ].values,
                                     axis=1
                                 )
                             )**0.5
-                            dataframe = dataframe.loc[:, 'Time', 'Rate']
+                            dataframe = dataframe.loc[:, ['Time', 'Rate']]
                             dataframe.insert(1, 'TimeErr', TimeErr)
                             dataframe.insert(3, 'RateErr', RateErr)
                     counter += 1
