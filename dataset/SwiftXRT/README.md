@@ -7,8 +7,12 @@ Data downloaded from the *Swift*-XRT GRB lightcurve repository: [[link]](https:/
 
  [`inc`]luding [`bad`] entries (i.e. unreliable data points according to *Swift* analysis)
 
-Each file `./$MODE/$EVENT_NAME.json` contains lightcurve data points measured for the event `$EVENT_NAME` in the mode `$MODE`. If the event is classified as a confirmed GRB, `$EVENT_NAME` matches the following pattern [[wiki]](https://en.wikipedia.org/wiki/Gamma-ray_burst):
-`GRB YYMMDD[A-Z]`, where `YYMMDD` denotes the date when the GRB was detected and `[A-Z]` is an optional capital latin letter which denotes the order the GRBs were detected during that day. The letter 'A' is appended to the name for the first burst identified, 'B' for the second, and so on. For bursts before the year 2010, this letter was only appended if more than one burst occurred that day 
+Each file `./$MODE/$EVENT_NAME.json` contains lightcurve data points measured for the event `$EVENT_NAME` in the mode `$MODE`. 
+
+If the event is classified as a confirmed GRB, `$EVENT_NAME` matches the common-used pattern
+> GRBs are named after the date on which they are discovered: the first two digits being the year, followed by the two-digit month and two-digit day and a letter with the order they were detected during that day. The letter 'A' is appended to the name for the first burst identified, 'B' for the second, and so on. For bursts before the year 2010, this letter was only appended if more than one burst occurred that day.
+>
+> -- <cite>[[Wikipedia]](https://en.wikipedia.org/wiki/Gamma-ray_burst)</cite>
 
 For instance, `./PC_incbad/GRB 221009A.json` contains lightcurve data points in the Photon Counting mode including unreliable entries for the Gamma-Ray Burst GRB 221009A [[wiki]](https://en.wikipedia.org/wiki/GRB_221009A) detected on October 09, 2022.
 
