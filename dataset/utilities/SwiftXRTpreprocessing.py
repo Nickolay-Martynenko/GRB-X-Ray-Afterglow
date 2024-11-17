@@ -504,9 +504,10 @@ class FeatureExtractor:
 
         cdf = np.vectorize(lambda x: NormalDist().cdf(x))
         Phi = cdf(distribution)
-        assert (
-            (Phi > 0.0) * (Phi < 1.0)
-        ).all(), 'Invalid CDF values found. Anderson-Darling normality test failed'
+        flag = ( (Phi > 0.0) * (Phi < 1.0) ).all()
+        if not flag:
+            print('Invalid CDF values found. Anderson-Darling normality test failed')
+            return None
 
         statistic = -coef * (N + np.mean(
                 np.arange(1, 2*N, 2) * np.log(Phi) + 
