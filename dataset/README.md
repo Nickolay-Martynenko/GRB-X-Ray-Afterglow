@@ -45,6 +45,8 @@ Dataset created:
 The train, val and test samples created by `./utilities/make_dataset.py` script in various regimes:
 
 - `original.csv`: original basic lightcurves (timestamps, count rates and uncertainties) without rebinning
-- `features.csv`: lightcurve feature extraction approach; similar to an analogous Rust package [[docs]](https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html) but significantly tuned to be appropriate for the GRB X-Ray afterglow analysis, see `FeatureExtractor` class in `./utilities/SwiftXRTpreprocessing.py` for detailes
+- `features.csv`: lightcurve feature extraction approach[^1]
 - `padded.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded
 - `padded.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are linearly interpolated
+
+[^1]: The feature exctraction procedure is close to that proposed by analogous Rust package [[docs]](https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html) but has been tuned significantly to be appropriate for the GRB X-Ray afterglows analysis. See `FeatureExtractor` class in `./utilities/SwiftXRTpreprocessing.py` for details
