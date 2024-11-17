@@ -17,8 +17,7 @@ def read_SwiftXRT(directory:str,
                   modes:list=['PC_incbad', 'WT_incbad'],
                   only_basic_lightcurve:bool=True,
                   symmetric_errors:bool=True,
-                  only_GRB:bool=True
-    )->dict:
+                  only_GRB:bool=True)->dict:
     """
     Reads Swift-XRT data from the specified directory.
     For each entry, the data points are sorted for the 
