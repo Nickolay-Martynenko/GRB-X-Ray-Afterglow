@@ -196,11 +196,19 @@ def rebin(dataframe:pd.DataFrame,
     ], f"Unknown rebinning regime: '{regime}'"
 
     lgTimeOrig = dataframe['Time'].apply(np.log10).values
+
     if regime=='none':
         lgRate = dataframe['Rate'].apply(np.log10).values
         if subtract_background:
             lgRate += 3.0
-        lgRateErr 
+        lgRateErr = dataframe['RateErr'].values/dataframe['Rate'].values/LOG10
+        weight = 1/lgRateErr**2
+        rebinned = {
+            'lgRate': lgRate,
+            'weight': weight,
+            'lgTime': lgTimeOrig
+        }
+        return rebinned
 
     padding = padding if regime=='padding' else 0.0
 
