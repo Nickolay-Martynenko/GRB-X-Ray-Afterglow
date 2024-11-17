@@ -132,41 +132,6 @@ def read_SwiftXRT(directory:str,
             f'{directory} is not an existing directory!'
         )
 
-def get_year(event_name:str)->int:
-    """
-    Reads a year from the common-used GRB name pattern
-
-    Parameters
-    ----------
-    event_name : str
-        Confirmed Gamma-Ray Burst event name,
-        e.g. 'GRB 221009A'
-
-    Returns
-    -------
-    year : int
-        The year of detection.
-
-    Raises
-    ------
-    ValueError
-        If the string `event_name` does not
-        match the expected pattern.
-
-    Examples
-    --------
-    >>> get_year('GRB 221009A')
-    2022
-
-    """
-
-    match = re.fullmatch(PATTERN, event_name)
-    if match:
-        year = 2000 + int(event_name.removeprefix('GRB ')[:2])
-        return year
-    else:
-        raise ValueError(f'{event_name} does not match the expected pattern')
-
 def complete_lightcurve(dataframe:pd.DataFrame,
                         min_timestamps:int=4,
                         bins:tuple=(1, 7, 64), min_bins:int=8)->bool:
@@ -210,6 +175,40 @@ def complete_lightcurve(dataframe:pd.DataFrame,
 
     return flag
 
+
+def get_year(event_name:str)->int:
+    """
+    Reads a year from the common-used GRB name pattern
+
+    Parameters
+    ----------
+    event_name : str
+        Confirmed Gamma-Ray Burst event name,
+        e.g. 'GRB 221009A'
+
+    Returns
+    -------
+    year : int
+        The year of detection.
+
+    Raises
+    ------
+    ValueError
+        If the string `event_name` does not
+        match the expected pattern.
+
+    Examples
+    --------
+    >>> get_year('GRB 221009A')
+    2022
+    """
+
+    match = re.fullmatch(PATTERN, event_name)
+    if match:
+        year = 2000 + int(event_name.removeprefix('GRB ')[:2])
+        return year
+    else:
+        raise ValueError(f'{event_name} does not match the expected pattern')
 
 def rebin(dataframe:pd.DataFrame,
           lgTime_min:float=1.0, lgTime_max:float=7.0,
@@ -1110,5 +1109,16 @@ def extract_features(dataframe:pd.DataFrame)->dict:
                 features[func_name] = output
     return features
 
+def make_dataset(SwiftXRTdict:dict, preprocesser:callable=extract_features)->dict:
+    dataset = dict()
+    for event_name, dataframe in SwiftXRTdict.items():
+        if complete_lightcurve(dataframe):
+            year = get_year(event_name)
+            preprocessed = preprocesser(dataframe)
+            dataset[event_name] = preprocessed
+        else:
+            continue
+    return dataset
 
-def make_dataset(SwiftXRTdict:dict)->dict:
+print(len(make_dataset(read_SwiftXRT('SwiftXRT'))))
+
