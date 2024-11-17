@@ -1,6 +1,6 @@
 import argparse
 import SwiftXRTpreprocessing
-from SwiftXRTpreprocessing import read_Swift, make_dataset
+from SwiftXRTpreprocessing import read_SwiftXRT, make_dataset
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--source_directory", type=str,
@@ -29,7 +29,7 @@ if args.preprocesser:
 	if args.preprocesser == "rebin":
 		kwargs.update({"preprocesser_kwargs": {"regime": args.regime}})
 
-SwiftXRTdict = read_Swift(args.source_directory)
+SwiftXRTdict = read_SwiftXRT(args.source_directory)
 train, val, test = make_dataset(SwiftXRTdict, **kwargs)
 for dataframe in (train, val, test):
 	dataframe.to_csv(f"{args.target_directory}/{dataframe.name}.csv")
