@@ -9,7 +9,7 @@ The train, val and test samples created by `./utilities/make_dataset.py` script 
 - `padded.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are linearly interpolated
 
 ## `./SwiftXRT`
-Raw *Swift*-XRT GRB lightcurves repository data. See `./SwiftXRT/README.md` for a detailed discussion.
+Raw *Swift*-XRT GRB lightcurves repository[^2] data
 
 ## `./utilities`
 *Swift*-XRT data preprocessing utilities. Unless a specific user-defined preprocessing is needed, please use `./utilities/make_dataset.py`. Note that this is optional, since all the datasets are already created and can be found in `./Data` directory. 
@@ -50,3 +50,4 @@ Dataset created:
 ```
 
 [^1]: The feature exctraction procedure is close to that proposed by analogous Rust package [[docs]](https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html) but has been tuned significantly to be appropriate for the GRB X-Ray afterglows analysis. See `FeatureExtractor` class in `./utilities/SwiftXRTpreprocessing.py` for details
+[^2]:  Please see `./SwiftXRT/README.md` for a detailed description of *Swift*-XRT dataset
