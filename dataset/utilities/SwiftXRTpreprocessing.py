@@ -1157,7 +1157,7 @@ def make_dataset(SwiftXRTdict:dict,
     print(f'Successfully preprocessed {len(SwiftXRTdict)} lightcurves.')
     print(
         f'Found {len(dataset)} lightcurves satisfying the requirements.\n'+
-        f'Preprocessing algorithm used: [{preprocesser.__name__}]'
+        f'Preprocessing algorithm used: `{preprocesser.__name__}`(...)'
     )
 
     return dataset
