@@ -490,8 +490,10 @@ class FeatureExtractor:
         Returns
         -------
         statistic : float
-            A.-D. normality test statistic.
+            A.-D. normality test statistic
             [https://en.wikipedia.org/wiki/Anderson–Darling_test]
+            If A.-D. test statistic for some reason can not be
+            calculated, np.NaN is returned instead.
         """
 
         N = len(self.magnitude)
@@ -504,10 +506,11 @@ class FeatureExtractor:
 
         cdf = np.vectorize(lambda x: NormalDist().cdf(x))
         Phi = cdf(distribution)
+
         flag = ( (Phi > 0.0) * (Phi < 1.0) ).all()
         if not flag:
-            print('Invalid CDF values found. Anderson-Darling normality test failed')
-            return None
+            # Anderson-Darling normality test failed because of invalid CDF values
+            return np.NaN
 
         statistic = -coef * (N + np.mean(
                 np.arange(1, 2*N, 2) * np.log(Phi) + 
