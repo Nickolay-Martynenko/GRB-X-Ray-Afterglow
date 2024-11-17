@@ -1116,7 +1116,7 @@ def make_dataset(SwiftXRTdict:dict,
                  criterion:callable=complete_lightcurve,
                  preprocesser:callable=extract_features,
                  preprocesser_kwargs:dict=None,
-                 random_state:int=2024,
+                 random_state:int=20041120,
     )->tuple:
     """
     Produces dataset from the raw SwiftXRT data utilizing preprocesser.
@@ -1139,8 +1139,10 @@ def make_dataset(SwiftXRTdict:dict,
         information.
     preprocesser_kwargs : dict, default=None
         Optional keyword arguments to be passed to preprocesser.
-    random_state : int, default=2024
+    random_state : int, default=20041120
         Random state used in the train-val-test split.
+        Default value is the Swift Observatory launch date (20 Nov 2004),
+        it guarantees that the outlier GRB 221009A is sent to test set.
 
     Returns
     -------
@@ -1160,27 +1162,28 @@ def make_dataset(SwiftXRTdict:dict,
         if criterion(dataframe):
             year = get_year(event_name)
             preprocessed = preprocesser(dataframe, **preprocesser_kwargs)
-            dataset[event_name] = preprocessed.update({'year': year})
+            preprocessed.update({'Year': year})
+            dataset[event_name] = preprocessed
         else:
             continue
-    print(f'Successfully preprocessed {len(SwiftXRTdict)} lightcurves.')
-    print(
-        f'Found {len(dataset)} lightcurves satisfying the requirements.\n'+
-        f'Preprocessing algorithm used: `{preprocesser.__name__}(...)`'
-    )
-
     dataset = pd.DataFrame.from_dict(dataset, orient='index').sort_index(axis=0)
     train, val_test = train_test_split(
         dataset,
         random_state=random_state,
         test_size=0.3,
-        stratify=dataset['year']
+        stratify=dataset['Year']
     )
     val, test = train_test_split(
         val_test,
         random_state=random_state,
         test_size=0.5,
-        stratify=val_test['year']
+        stratify=val_test['Year']
     )
+
     train.name, val.name, test.name = 'train', 'val', 'test'
+    print(f'Successfully preprocessed {len(SwiftXRTdict)} lightcurves.')
+    print(
+        f'Found {len(dataset)} lightcurves satisfying the requirements.\n'+
+        f'Preprocessing algorithm used: `{preprocesser.__name__}(...)`'
+    )
     return (train, val, test)

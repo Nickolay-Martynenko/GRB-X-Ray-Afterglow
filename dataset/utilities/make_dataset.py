@@ -1,4 +1,5 @@
 import argparse
+import os
 import SwiftXRTpreprocessing
 from SwiftXRTpreprocessing import read_SwiftXRT, make_dataset
 
@@ -32,8 +33,10 @@ if args.preprocesser:
 SwiftXRTdict = read_SwiftXRT(args.source_directory)
 train, val, test = make_dataset(SwiftXRTdict, **kwargs)
 for dataframe in (train, val, test):
+	if not os.path.isdir(f"{args.target_directory}"):
+		os.mkdir(f"{args.target_directory}")
 	dataframe.to_csv(f"{args.target_directory}/{dataframe.name}.csv")
-print(f"Dataset created in '{args.target_directory}'")
+print(f"Dataset created in directory '{args.target_directory}/...'")
 
 
 
