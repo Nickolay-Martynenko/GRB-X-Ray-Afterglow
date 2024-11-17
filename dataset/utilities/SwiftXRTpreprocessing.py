@@ -162,13 +162,14 @@ def complete_lightcurve(dataframe:pd.DataFrame,
 
     flag = True
     timeseries = dataframe['Time'].values
+
     if len(timeseries) < min_timestamps:
         flag = False
         return flag
     else:
         hist, _ = np.histogram(
             timeseries,
-            bins=np.linspace(*bins)
+            bins=np.logspace(*bins)
         )
         if np.sum( (hist > 0).astype(int) ) < min_bins:
             flag = False
