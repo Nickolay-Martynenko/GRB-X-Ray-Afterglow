@@ -53,6 +53,11 @@ def read_SwiftXRT(directory:str,
     -------
     SwiftXRT : dict
         The resulting dataset.
+
+    Raises
+    ------
+    FileNotFoundError
+        If `directory` is not an existing directory.
     """
     if os.path.isdir(directory):
         counter = 0
@@ -121,6 +126,28 @@ def read_SwiftXRT(directory:str,
         raise FileNotFoundError(
             f'{directory} is not an existing directory!'
         )
+
+def get_year(event_name:str)->int:
+    """
+    Reads a year from the common-used GRB name pattern
+
+    Parameters
+    ----------
+    event_name : str
+        Confirmed Gamma-Ray Burst event name,
+        e.g. 'GRB 221009A'
+
+    Returns
+    -------
+    year : int
+        The year of detection.
+
+    Raises
+    ------
+    ValueError
+        If the string `event_name` does not
+        match the expected pattern.
+    """
 
 def rebin(dataframe:pd.DataFrame,
           lgTime_min:float=1.0, lgTime_max:float=7.0,
@@ -1022,4 +1049,5 @@ def extract_features(dataframe:pd.DataFrame):
                 features[func_name] = output
     return features
 
-def make_dataset(SwiftXRTdict:dict)
+
+def make_dataset(SwiftXRTdict:dict)->dict:
