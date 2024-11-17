@@ -1,6 +1,7 @@
 #!/usr/bin/env python3.11
 import os
 import re
+import numpy as np
 import pandas as pd
 import pickle
 import sys
