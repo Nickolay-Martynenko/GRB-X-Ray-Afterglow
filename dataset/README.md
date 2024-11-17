@@ -6,7 +6,7 @@ The train, val and test samples created by `./utilities/make_dataset.py` script 
 - `original.csv`: original basic lightcurves (timestamps, count rates and uncertainties) without rebinning
 - `features.csv`: lightcurve feature extraction approach[^1]
 - `padded.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded
-- `padded.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are linearly interpolated
+- `interp.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are linearly interpolated
 
 ## `./SwiftXRT`
 Raw *Swift*-XRT GRB lightcurves repository[^2] data
