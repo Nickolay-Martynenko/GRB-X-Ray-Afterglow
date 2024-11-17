@@ -1,5 +1,6 @@
 import argparse
 import os
+import shutil
 import SwiftXRTpreprocessing
 from SwiftXRTpreprocessing import read_SwiftXRT, make_dataset
 
@@ -18,7 +19,7 @@ parser.add_argument("-p", "--preprocesser", type=str,
 parser.add_argument("-r", "--regime", type=str,
 					choices=["padding", "linear_interpolation", "none"],
 					default="none",
-					help="rebinning regime (ignored unless rebin preprocesser is specified)"
+					help="rebinning regime (ignored unless rebin preprocesser is used)"
 )
 
 args = parser.parse_args()
@@ -37,18 +38,23 @@ train, val, test = make_dataset(SwiftXRTdict, **kwargs)
 print("") # print blank line to make output look nice
 
 for dataframe in (train, val, test):
-	if not os.path.isdir(f"{dataframe.name}"):
-		os.mkdir(f"{dataframe.name}")
-	dataframe.to_csv(f"{dataframe.name}/{args.name}.csv")
+	if not os.path.isdir("Data"):
+		os.mkdir("Data")
+	if not os.path.isdir(f"Data/{dataframe.name}"):
+		os.mkdir(f"Data/{dataframe.name}")
+	dataframe.to_csv(f"Data/{dataframe.name}/{args.name}.csv")
+
+shutil.rmtree(f"{os.path.dirname(__file__)}/__pycache__")
 print(
 	f"Dataset created:\n"+
 	f".\n"+
-	f"└── train\n"+
-	f"    └── {args.name}.csv\t({len(train)} entries)\n"+
-	f"└── val\n"+
-	f"    └── {args.name}.csv\t({len(val)} entries)\n"+
-	f"└── test\n"+
-	f"    └── {args.name}.csv\t({len(test)} entries)\n"
+	f"└── Data\n"+
+	f"    └── train\n"+
+	f"        └── {args.name}.csv\t({len(train)} entries)\n"+
+	f"    └── val\n"+
+	f"        └── {args.name}.csv\t({len(val)} entries)\n"+
+	f"    └── test\n"+
+	f"        └── {args.name}.csv\t({len(test)} entries)\n"
 )
 
 
