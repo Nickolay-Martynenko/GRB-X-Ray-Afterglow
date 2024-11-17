@@ -35,8 +35,8 @@ def visualize_latent(
     
     """
     Visualization Utility.
-    Only 2D or 3D data can be trivially visualized,
-    so the 
+    Only 1D, 2D or 3D data can be trivially visualized,
+    so the other datasets are truncated.
     
     Parameters
     ----------
@@ -75,7 +75,7 @@ def visualize_latent(
     columns = [col for col in df.columns if re.match(PATTERN, col)]
     dim = len(columns)
 
-    if dim<=1 or (dim>=4 and not ignore_dim):
+    if (dim>=4 and not ignore_dim):
         raise ValueError(f'Unable to visualize {dim}D data')
     elif (dim>=4) and ignore_dim:
     	print(f'Warning: {dim}D data truncated to 3D')
@@ -106,9 +106,6 @@ def visualize_latent(
             df['feature_2'].values,
             c=c, cmap=COLORMAP, s=32, marker='o'
         )
-        ax.set_xlabel('feature_0')
-        ax.set_ylabel('feature_1')
-        ax.set_zlabel('feature_2')
 
     if dim==2:
         ax = fig.add_subplot()
@@ -117,16 +114,24 @@ def visualize_latent(
             df['feature_1'].values,
             c=c, cmap=COLORMAP, s=32, marker='o'
         )
-        ax.set_xlabel('feature_0')
-        ax.set_ylabel('feature_1')
+
+    if dim==1:
+        ax = fig.add_subplot()
+        np.random.seed(42)
+        ax.scatter(
+            df['feature_0'].values,
+            np.random.uniform(size=df['feature_0'].values.shape),
+            c=c, cmap=COLORMAP, s=32, marker='o'
+        )
     
     ax.set_title(title)
 
     if len(handles) > 0:
     	ax.legend(handles, bbox_to_anchor=(1.1, 0.5), loc='center left')
 
+    plt.tight_layout() 
     plt.savefig(f'{savedir}/{title}.pdf', format='pdf', bbox_inches='tight')
-    
+
     if show:
         plt.show()
     else:
