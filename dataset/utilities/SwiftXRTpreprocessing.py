@@ -1,10 +1,8 @@
-#!/usr/bin/env python3.11
 import os
 import re
 import numpy as np
 import pandas as pd
 import pickle
-import sys
 from statistics import NormalDist
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import HuberRegressor
@@ -1115,17 +1113,51 @@ def extract_features(dataframe:pd.DataFrame)->dict:
                 features[func_name] = output
     return features
 
-def make_dataset(SwiftXRTdict:dict, preprocesser:callable=extract_features)->dict:
+def make_dataset(SwiftXRTdict:dict,
+                 criterion:callable=complete_lightcurve,
+                 preprocesser:callable=extract_features,
+                 preprocesser_kwargs:dict=None,
+    )->dict:
+    """
+    Produces dataset from the raw SwiftXRT data utilizing preprocesser.
+
+    Parameters
+    ----------
+    SwiftXRTdict : dict
+        A dictionary in the format returned by read_SwiftXRT.
+    criterion : callable, default=complete_lightcurve
+        A function that returns True iff the passed dataframe 
+        satisfies the user-defined requirements and False otherwise.
+        The entries not satisfying the `criterion` will be excluded
+        from the resulting dataset.
+    preprocesser : callable, default=extract_features
+        A function that preprocesses individual pandas dataframes 
+        from `SwiftXRTdict` and returns a dict with the extracted
+        information.
+    preprocesser_kwargs : dict, default=None
+        Optional keyword arguments to be passed to preprocesser.
+
+    Returns
+    -------
+    dataset : dict
+        The preprocessed and filtered dataset.
+    """
+
     dataset = dict()
-    print('[Making Dataset]')
+    if preprocesser_kwargs is None:
+        preprocesser_kwargs = {}
+    print('[Creating Dataset]: All available data collection modes')
     for event_name, dataframe in tqdm(SwiftXRTdict.items()):
-        if complete_lightcurve(dataframe):
+        if criterion(dataframe):
             year = get_year(event_name)
-            preprocessed = preprocesser(dataframe)
-            dataset[event_name] = preprocessed
+            preprocessed = preprocesser(dataframe, **preprocesser_kwargs)
+            dataset[event_name] = preprocessed.update({'year': year})
         else:
             continue
     print(f'Successfully preprocessed {len(SwiftXRTdict)} lightcurves.')
-    print(f'Complete lightcurves found: {len(dataset)}. '+
-        f'Preprocessing utility used: {preprocesser.__name__}')
+    print(
+        f'Found {len(dataset)} lightcurves satisfying the requirements.\n'+
+        f'Preprocessing algorithm used: [{preprocesser.__name__}]'
+    )
+
     return dataset
