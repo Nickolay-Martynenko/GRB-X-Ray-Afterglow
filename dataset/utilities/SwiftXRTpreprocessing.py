@@ -123,9 +123,9 @@ def read_SwiftXRT(directory:str,
                     f'not found in {target_directory}'
                 )
         print(
-            f'Successfully processed {counter} json files.'+
+            f'Successfully processed {counter} json files. '+
             f'Found {len(events)} unique events' +
-            f'(only confirmed GRB).' if only_GRB else f'.'
+            f' (only confirmed GRB).' if only_GRB else f'.'
         )
         return events
     else:
