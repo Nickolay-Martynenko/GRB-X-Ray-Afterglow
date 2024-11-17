@@ -1166,10 +1166,10 @@ def make_dataset(SwiftXRTdict:dict,
     print(f'Successfully preprocessed {len(SwiftXRTdict)} lightcurves.')
     print(
         f'Found {len(dataset)} lightcurves satisfying the requirements.\n'+
-        f'Preprocessing algorithm used: `{preprocesser.__name__}`(...)'
+        f'Preprocessing algorithm used: `{preprocesser.__name__}(...)`'
     )
 
-    dataset = pd.DataFrame.from_dict(dataset).T.sort_index(axis=0)
+    dataset = pd.DataFrame.from_dict(dataset, orient='index').sort_index(axis=0)
     train, val_test = train_test_split(
         dataset,
         random_state=random_state,
