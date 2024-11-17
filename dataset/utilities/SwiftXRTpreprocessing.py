@@ -216,7 +216,7 @@ def rebin(dataframe:pd.DataFrame,
           lgTime_nbins:int=64,
           regime:str='padding', padding:float=-3.0,
           subtract_background:bool=True
-    )->tuple:
+    )->dict:
     """
     Applies rebinning to a single Swift-XRT lightcurve.
 
@@ -1083,7 +1083,7 @@ class FeatureExtractor:
 
         return average
 
-def extract_features(dataframe:pd.DataFrame):
+def extract_features(dataframe:pd.DataFrame)->dict:
     """
     Extract all available features using FeatureExtractor class.
 
@@ -1093,9 +1093,8 @@ def extract_features(dataframe:pd.DataFrame):
         DataFrame with the raw Swift-XRT lightcurve data.
     Returns
     -------
-    features : dict, optional
+    features : dict
         The dictionary of extracted features.
-        Only returned if `return_array` is False.
     """
 
     obj = FeatureExtractor(dataframe)
