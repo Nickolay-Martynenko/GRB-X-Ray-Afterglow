@@ -7,10 +7,16 @@ import subprocess
 
 from ast import literal_eval
 
-PARENT_DIR_URL = 'https://raw.githubusercontent.com/Nickolay-Martynenko/GRB-X-Ray-Afterglow/main/dataset/Data/'
+PARENT_DIR_URL = (
+    'https://raw.githubusercontent.com/'+
+    'Nickolay-Martynenko/GRB-X-Ray-Afterglow/'+
+    'main/dataset/Data/'
+)
 
 SPACES = re.compile(r"\s+")
-transform = lambda x: literal_eval("["+SPACES.sub(",", x.strip("[] ")).strip()+"]")
+transform = lambda x: literal_eval(
+    "["+SPACES.sub(",", x.strip("[] ")).strip()+"]"
+)
 
 def dtypes_handler(
         df:pd.DataFrame
@@ -36,7 +42,8 @@ def dtypes_handler(
     return df
 
 def train_val_test_downloader(
-    dataset_name:str='features'
+    dataset_name:str='features',
+    download_labels:bool=True
     )->tuple:
     """
     Downloads a specified dataset directly from GitHub
@@ -45,11 +52,16 @@ def train_val_test_downloader(
     ----------
     dataset_name : str, default='features'
         Name of the dataset to be downloaded.
-    
+    load_labels : bool, default=True
+        If True, Swift analysis data is also downloaded
+        and returned as a separate dataframe.
     Returns
     -------
     train, val, test : pandas.DataFrames
         Dataframes downloaded from the repository
+    labels : pandas.DataFrame, optional
+        Only returned if load_labels=True.
+        Swift analysis data.
     """
     
     os.mkdir('./tmp')
@@ -75,16 +87,28 @@ def train_val_test_downloader(
     test = dtypes_handler(
         pd.read_csv('./tmp/test.csv', index_col=0).drop('Year', axis=1)
     )
+
+    if download_labels:
+        labels_url = PARENT_DIR_URL+'GRBtable.csv'
+        subprocess.run(['curl', '-o', './tmp/labels.csv', '-s',
+                        '--show-error', f'{labels_url}'])
+        labels = pd.read_csv('./tmp/labels.csv', index_col=0)
+        index = np.hstack((train.index, val.index, test.index))
+        labels = labels.loc[index, :]
     
     shutil.rmtree('./tmp')
     
     print(f'Datasets downloaded\n'+
-          f' - train : {len(train)} entries\n'+
-          f' - val   : {len(val)} entries\n'+
-          f' - test  : {len(test)} entries'
+          f' - train  : {len(train)} entries\n'+
+          f' - val    : {len(val)} entries\n'+
+          f' - test   : {len(test)} entries'+
+          f'\n - labels : {len(labels)} entries' if download_labels else ''
     )
     
-    return (train, val, test)
+    if download_labels:
+        return (train, val, test, labels)
+    else:
+        return (train, val, test)
 
 def choose_one_column(df:pd.DataFrame, column:str)->pd.DataFrame:
     """
