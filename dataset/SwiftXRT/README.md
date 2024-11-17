@@ -1,14 +1,14 @@
 # *Swift*-XRT Light Curves
-This directory contains data downloaded from the *Swift*-XRT GRB lightcurve repository: [[link]](https://www.swift.ac.uk/xrt_curves/)
+Data downloaded from the *Swift*-XRT GRB lightcurve repository: [[link]](https://www.swift.ac.uk/xrt_curves/)
 
-`./PC_incbad`: data points collected in a [`P`]hoton [`C`]ounting mode
+- `./PC_incbad`: data points collected in a [`P`]hoton [`C`]ounting mode
 
-`./WT_incbad`: data points collected in a [`W`]indow [`T`]iming settling mode
+- `./WT_incbad`: data points collected in a [`W`]indow [`T`]iming settling mode
 
  [`inc`]luding possibly [`bad`] entries (i.e. unreliable data points according to *Swift* Analysis)
 
-Each file `./$MODE/$EVENT_NAME.json` contains lightcurve data points measured for the event `$EVENT_NAME` in the mode `$MODE`. As a rule, if the event is classified as a GRB, `$EVENT_NAME` matches the following pattern:
-`GRB YYMMDDX`, where `YYMMDD` denotes the date when the GRB was detected and `X` is an optional capital latin letter. 
+Each file `./$MODE/$EVENT_NAME.json` contains lightcurve data points measured for the event `$EVENT_NAME` in the mode `$MODE`. If the event is classified as a confirmed GRB, `$EVENT_NAME` matches the following pattern [[wiki]](https://en.wikipedia.org/wiki/Gamma-ray_burst):
+`GRB YYMMDD[A-Z]`, where `YYMMDD` denotes the date when the GRB was detected and `[A-Z]` is an optional capital latin letter which denotes the order the GRBs were detected during that day. The letter 'A' is appended to the name for the first burst identified, 'B' for the second, and so on. For bursts before the year 2010, this letter was only appended if more than one burst occurred that day 
 
 For instance, `./PC_incbad/GRB 221009A.json` contains lightcurve data points in the Photon Counting mode including unreliable entries for the Gamma-Ray Burst GRB 221009A [[wiki]](https://en.wikipedia.org/wiki/GRB_221009A) detected on October 09, 2022.
 
