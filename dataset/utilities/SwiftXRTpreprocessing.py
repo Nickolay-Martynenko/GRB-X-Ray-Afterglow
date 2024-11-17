@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.11
 import os
+import re
 import pandas as pd
 import pickle
 import sys
@@ -10,6 +11,7 @@ from tqdm import tqdm
 
 
 LOG10 = 2.302585092994046
+PATTERN = r'GRB [0-9]{2}[0-1]{1}[0-9]{1}[0-3]{1}[0-9]{1}[A-Z]?'
 
 def read_SwiftXRT(directory:str,
                   modes:list=['PC_incbad', 'WT_incbad'],
@@ -70,7 +72,11 @@ def read_SwiftXRT(directory:str,
                     for event in os.listdir(dataset_path)
                     if (
                         event.endswith('.json') and 
-                        (event.startswith('GRB ') or not only_GRB)
+                        (
+                            bool(
+                                re.fullmatch(PATTERN, event.removesuffix('.json'))
+                                ) or not only_GRB
+                        )
                     )
                 ]
                 print(f'[Processing]: {mode}')
@@ -147,7 +153,64 @@ def get_year(event_name:str)->int:
     ValueError
         If the string `event_name` does not
         match the expected pattern.
+
+    Examples
+    --------
+    >>> get_year('GRB 221009A')
+    2022
+
     """
+
+    match = re.fullmatch(PATTERN, event_name)
+    if match:
+        year = 2000 + int(event_name.removeprefix('GRB ')[:2])
+        return year
+    else:
+        raise ValueError(f'{event_name} does not match the expected pattern')
+
+def complete_lightcurve(dataframe:pd.DataFrame,
+                        min_timestamps:int=4,
+                        bins:tuple=(1, 7, 64), min_bins:int=8)->bool:
+    """
+    Detects complete/incomplete lightcurves
+
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        DataFrame with the raw Swift-XRT lightcurve data.
+    min_timestamps : int, default=4
+        Minimal required timestamps for 
+        the lightcurve to be 'complete'
+    bins : tuple, default=(1, 7, 64)
+        start, stop, number of bins
+        in the decimal log-uniform timescale
+    min_bins : int, default=8
+        Minimal required non-empty bins for 
+        the lightcurve to be 'complete'
+
+    Returns
+    -------
+    flag : bool
+        If True, the lightcurve is complete. 
+        Otherwise, the lightcurve is incomplete.
+    """
+
+    flag = True
+    timeseries = dataframe['Time'].values
+    if len(timeseries) < min_timestamps:
+        flag = False
+        return flag
+    else:
+        hist, _ = np.hist(
+            timeseries,
+            bins=np.linspace(*bins)
+        )
+        if np.sum( (hist > 0).astype(int) ) < min_bins:
+            flag = False
+            return flag
+
+    return flag
+
 
 def rebin(dataframe:pd.DataFrame,
           lgTime_min:float=1.0, lgTime_max:float=7.0,
