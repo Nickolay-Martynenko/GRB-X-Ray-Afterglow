@@ -89,7 +89,7 @@ def errorbar_plot_collection(
     ax.set_yscale('log')
     ax.set_ylim(1e-4, 1e4)
 
-    num_events = len(events)
+    num_events = len(event_names)
 
     if colors is None:
         colors = [COLORMAP((i+1)/num_events) for i in range(num_events)]
