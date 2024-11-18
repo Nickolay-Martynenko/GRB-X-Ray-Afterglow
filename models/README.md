@@ -6,4 +6,4 @@ We compare the AutoEncoder model with a number of Machine Learning algorithms, n
 
 ## Metrics
 To compare between the models, we score samples and measure a connection between the scores and the presence of flares in the lightcurve. Although the latter is not exactly what one must call an *anomaly*, such a metric is a robust and well-defined  measure of how well the model captures real physical properties of the lightcurve morphology.
-We also manually look at top-10 scored samples and try to argue what features does model looked at, if possible.
+We also manually look at top-10 anomalous-scored samples, and try to argue what physical/morphological/instrumental lightcurve features did the model look at, if possible.
