@@ -42,13 +42,51 @@ def make_errorbar(ax:Axes,
 		capsize=capsize)
 	return ax
 
+def errorbar_plot_collection(
+	event_names:list,
+	colors:list=None,
+	fmts:list=None,
+	title:str='Title',
+    savedir:str='./tmp',
+    show:bool=False):
+	"""
+	Draws errorbar from the list of event_names
+
+	Parameters
+	----------
+	event_names : list 
+		List of event_names to
+		be downloaded and visualized
+	colors : list, default=None
+		The list of colors to be assigned
+		to the errobar plots. Must be of 
+		the same length as event_names. 
+		If None, a unique color is assigned
+		to each plot.
+	fmts : list, default=None
+		The list of fmts to be assigned
+		to the errobar plots. Must be of 
+		the same length as event_names. 
+		If None, a default fmt 's' is 
+		assigned to each plot.
+	title : str, default='Title'
+        Title of the resulting figure.
+    savedir : str, default='./tmp'
+        The directory to save the plot in.
+    show : bool, default=False
+        Whether to show the plot in the notebook.
+
+    Returns
+    -------
+    None
+	"""
 def visualize_latent(
     df:pd.DataFrame,
     color_column:str='numbreaks',
     ignore_dim:bool=True,
     title:str='Title',
     savedir:str='./tmp',
-    show:bool=False)->pd.DataFrame:
+    show:bool=False):
     
     """
     Visualization Utility.
@@ -69,7 +107,7 @@ def visualize_latent(
     	are truncated to the their 3D subspaces.
     	Otherwise ValueError is raised in the case
     	of too many latent features found.
-    title : str, default='Scatter plot'
+    title : str, default='Title'
         Title of the resulting figure.
     savedir : str, default='./tmp'
         The directory to save the plot in.
