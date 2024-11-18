@@ -290,10 +290,12 @@ def rebin(dataframe:pd.DataFrame,
             lgRate += 3.0
         lgRateErr = dataframe['RateErr'].values/dataframe['Rate'].values/LOG10
         weight = 1/lgRateErr**2
+        # if too many data points, return a sparsed version
+        step = len(lgRate) // 1000 + 1
         rebinned = {
-            'lgRate': lgRate,
-            'weight': weight,
-            'lgTime': lgTimeOrig
+            'lgRate': lgRate[::step],
+            'weight': weight[::step],
+            'lgTime': lgTimeOrig[::step]
         }
         return rebinned
 
@@ -381,7 +383,7 @@ class FeatureExtractor:
     Amplitude()->float:
         Half-amplitude of magnitude.
     AndersonDarlingNormal()->float:
-        Unbiased Anderson–Darling normality test statistic.
+        Unbiased Anderson???Darling normality test statistic.
     BeyondNStd(N:float=1.0)->float:
         The fraction of data points with the 
         values beyond +-n standard deviations
@@ -478,7 +480,7 @@ class FeatureExtractor:
 
     def AndersonDarlingNormal(self)->float:
         """
-        Unbiased Anderson–Darling normality test statistic.
+        Unbiased Anderson???Darling normality test statistic.
 
         Parameters
         ----------
@@ -488,7 +490,7 @@ class FeatureExtractor:
         -------
         statistic : float
             A.-D. normality test statistic
-            [https://en.wikipedia.org/wiki/Anderson–Darling_test]
+            [https://en.wikipedia.org/wiki/Anderson???Darling_test]
             If A.-D. test statistic for some reason can not be
             calculated, np.NaN is returned instead.
         """
