@@ -10,7 +10,7 @@ from ast import literal_eval
 PARENT_DIR_URL = (
     'https://raw.githubusercontent.com/'+
     'Nickolay-Martynenko/GRB-X-Ray-Afterglow/'+
-    'main/dataset/Data/'
+    'main/dataset/'
 )
 
 SPACES = re.compile(r"\s+")
@@ -66,7 +66,7 @@ def train_val_test_downloader(
     shutil.rmtree('./tmp', ignore_errors=True)
     os.mkdir('./tmp')
     
-    train_url = PARENT_DIR_URL+f'train/{dataset_name}.csv'
+    train_url = PARENT_DIR_URL+f'Data/train/{dataset_name}.csv'
     subprocess.run(['curl', '-o', './tmp/train.csv',
                     '-s', '--show-error', f'{train_url}'])
     train = dtypes_handler(
@@ -74,14 +74,14 @@ def train_val_test_downloader(
     )
 
     
-    val_url = PARENT_DIR_URL+f'val/{dataset_name}.csv'
+    val_url = PARENT_DIR_URL+f'Data/val/{dataset_name}.csv'
     subprocess.run(['curl', '-o', './tmp/val.csv',
                     '-s', '--show-error', f'{val_url}'])
     val = dtypes_handler(
         pd.read_csv('./tmp/val.csv', index_col=0).drop('Year', axis=1)
     )
     
-    test_url = PARENT_DIR_URL+f'test/{dataset_name}.csv'
+    test_url = PARENT_DIR_URL+f'Data/test/{dataset_name}.csv'
     subprocess.run(['curl', '-o', './tmp/test.csv', '-s',
                     '--show-error', f'{test_url}'])
     test = dtypes_handler(
@@ -89,7 +89,7 @@ def train_val_test_downloader(
     )
 
     if download_labels:
-        labels_url = PARENT_DIR_URL+'GRBtable.csv'
+        labels_url = PARENT_DIR_URL+'Data/GRBtable.csv'
         subprocess.run(['curl', '-o', './tmp/labels.csv', '-s',
                         '--show-error', f'{labels_url}'])
         labels = pd.read_csv('./tmp/labels.csv',
@@ -139,3 +139,69 @@ def choose_one_column(df:pd.DataFrame, column:str)->pd.DataFrame:
     df_copy = pd.DataFrame(data=data, index=index)
     
     return df_copy
+
+def download_single_LC(
+    event_name:str,
+    modes:list['PC_incbad', 'WT_incbad'],
+    )->tuple:
+    """
+    Downloads lightcurve for a single event
+    directly from the repository dataset.
+    Output is designed to follow the expected
+    matplotlib.pyplot.errorbar input pattern
+
+    Parameters
+    ----------
+    event_name : str
+        The name of event to be downloaded
+    modes : list
+        The available modes of data collection
+
+    Returns
+    -------
+    x : np.ndarray
+        Timestamps
+    y : np.ndarray
+        Source count rate 
+    yerr : np.ndarray
+        -/+ source count rate errors.
+    xerr : np.ndarray
+        -/+ timestamps errors.
+    """
+    shutil.rmtree('./tmp', ignore_errors=True)
+    os.mkdir('./tmp')
+
+    dataframes = []
+
+    for mode in modes:
+        url = PARENT_DIR_URL+f'SwiftXRT/{mode}/{event_name}.json'
+        subprocess.run([
+            'curl', '-o',
+            f'./tmp/{mode}_{event_name}.json',
+            '-s', '--show-error', f'{train_url}']
+        )
+        df = pd.read_json(f'./tmp/{mode}_{event_name}.json')
+        if len(df) > 0:
+            dataframes.append(df.loc[:,
+                ['Time', 'TimeNeg', 'TimePos',
+                 'Rate', 'RatePos', 'RateNeg']
+                ]
+            )
+    dataframe = pd.concat(
+        dataframes, axis=0, ignore_index=True
+    ).sort_values(by='Time')
+
+    x = dataframe['Time'].values
+    xerr = dataframe[['TimeNeg', 'TimePos']].values
+    xerr[0, :] *= -1
+
+    y = dataframe['Rate'].values
+    yerr = dataframe[['RateNeg', 'RatePos']].values
+    yerr[0, :] *= -1
+
+    return x, y, yerr, xerr
+
+
+
+
+
