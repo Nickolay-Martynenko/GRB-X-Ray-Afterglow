@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
 
+from data_downloader import download_single_LC
+
 plt.style.use('ggplot')
 plt.rcParams['font.family']='monospace'
 
@@ -80,6 +82,27 @@ def errorbar_plot_collection(
     -------
     None
 	"""
+
+	fig, ax = plt.subplots()
+
+	num_events = len(events)
+
+	if colors is None:
+		colors = [COLORMAP((i+1)/num_events) for i in range(num_events)]
+	if fmts is None:
+		fmts = ['s',]*num_events
+
+	for event_name, color, fmt in zip(event_names, colors, fmts):
+		x, y, yerr, xerr = download_single_LC(event_name)
+		ax = make_errorbar(ax, x, y, yerr, xerr, color, fmt)
+
+	plt.tight_layout() 
+    plt.savefig(f'{savedir}/{title}.pdf', format='pdf', bbox_inches='tight')
+    if show:
+        plt.show()
+    else:
+        plt.close()
+
 def visualize_latent(
     df:pd.DataFrame,
     color_column:str='numbreaks',
