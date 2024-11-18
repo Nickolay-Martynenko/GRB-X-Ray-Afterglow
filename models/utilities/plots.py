@@ -5,9 +5,6 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
 
-from tqdm import tqdm
-from .data_downloader import download_single_LC
-
 plt.style.use('ggplot')
 plt.rcParams['font.family']='monospace'
 
