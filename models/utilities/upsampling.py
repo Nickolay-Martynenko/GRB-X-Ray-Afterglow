@@ -77,10 +77,11 @@ def upsampling(
             weight[rows, insert] = 0.0
 
             for r in rows:
+                non_empty = (weight[r, :] > 0).ravel()
                 rate[r, insert] = np.interp(
                     pseudo_t[insert],
-                    pseudo_t[weight[r, :] > 0],
-                    rate[r, weight[r, :] > 0]
+                    pseudo_t[non_empty],
+                    rate[r, non_empty]
                 )
 
     upsampled['lgRate'] = rate.tolist()
