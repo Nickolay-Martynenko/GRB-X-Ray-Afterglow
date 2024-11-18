@@ -76,7 +76,7 @@ def upsampling(
 
             weight[rows, insert] = 0.0
 
-            for r in np.argwhere(rows):
+            for r in np.argwhere(rows).ravel():
                 non_empty = weight[r, :] > 0
                 rate[r, insert] = np.interp(
                     pseudo_t[insert],
