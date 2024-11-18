@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
 
+from tqdm import tqdm
 from .data_downloader import download_single_LC
 
 plt.style.use('ggplot')
@@ -96,7 +97,7 @@ def errorbar_plot_collection(
     if fmts is None:
         fmts = ['s',]*num_events
 
-    for event_name, color, fmt in zip(event_names, colors, fmts):
+    for event_name, color, fmt in tqdm(zip(event_names, colors, fmts)):
         x, y, yerr, xerr = download_single_LC(event_name)
         ax = make_errorbar(ax, x, y, yerr, xerr, color, fmt)
     plt.tight_layout()
