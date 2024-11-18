@@ -142,7 +142,7 @@ def choose_one_column(df:pd.DataFrame, column:str)->pd.DataFrame:
 
 def download_single_LC(
     event_name:str,
-    modes:list['PC_incbad', 'WT_incbad'],
+    modes:list=['PC_incbad', 'WT_incbad'],
     )->tuple:
     """
     Downloads lightcurve for a single event
