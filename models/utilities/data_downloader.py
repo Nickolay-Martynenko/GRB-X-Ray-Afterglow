@@ -180,13 +180,14 @@ def download_single_LC(
             f'./tmp/{mode}_{event_name}.json',
             '-s', '--show-error', f'{url}']
         )
-        df = pd.read_json(f'./tmp/{mode}_{event_name}.json')
-        if len(df) > 0:
-            dataframes.append(df.loc[:,
-                ['Time', 'TimeNeg', 'TimePos',
-                 'Rate', 'RatePos', 'RateNeg']
-                ]
-            )
+        if os.path.isfile(f'./tmp/{mode}_{event_name}.json'):
+            df = pd.read_json(f'./tmp/{mode}_{event_name}.json')
+            if len(df) > 0:
+                dataframes.append(df.loc[:,
+                    ['Time', 'TimeNeg', 'TimePos',
+                     'Rate', 'RatePos', 'RateNeg']
+                    ]
+                )
     dataframe = pd.concat(
         dataframes, axis=0, ignore_index=True
     ).sort_values(by='Time')
