@@ -178,7 +178,7 @@ def download_single_LC(
         subprocess.run([
             'curl', '-o',
             f'./tmp/{mode}_{event_name}.json',
-            '-s', '--show-error', f'{train_url}']
+            '-s', '--show-error', f'{url}']
         )
         df = pd.read_json(f'./tmp/{mode}_{event_name}.json')
         if len(df) > 0:
