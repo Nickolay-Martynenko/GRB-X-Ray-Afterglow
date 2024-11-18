@@ -84,6 +84,10 @@ def errorbar_plot_collection(
 	"""
 
 	fig, ax = plt.subplots()
+	ax.set_xscale('log')
+	ax.set_xlim(1e1, 1e8)
+	ax.set_yscale('log')
+	ax.set_ylim(1e-4, 1e4)
 
 	num_events = len(events)
 
