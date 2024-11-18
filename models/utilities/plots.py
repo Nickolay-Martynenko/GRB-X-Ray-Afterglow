@@ -2,6 +2,7 @@ import re
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.axes import Axes
 from matplotlib.lines import Line2D
 
 plt.style.use('ggplot')
@@ -24,6 +25,22 @@ def make_legend(colors:list, labels:list, marker:str='o')->list:
 			)
 		)
 	return handles
+
+def make_errorbar(ax:Axes,
+	x:np.ndarray, y:np.ndarray,
+	yerr:np.ndarray, xerr:np.ndarray,
+	color:str,
+	fmt='s', markersize=6, capsize=3, 
+	)->Axes:
+	"""
+	Adjusts errobar to axes
+	"""
+	ax.errorbar(x, y, yerr, xerr,
+		color=color,
+		fmt=fmt,
+		markersize=markersize,
+		capsize=capsize)
+	return ax
 
 def visualize_latent(
     df:pd.DataFrame,
