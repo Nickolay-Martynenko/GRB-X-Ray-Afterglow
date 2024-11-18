@@ -17,12 +17,12 @@ def DTWdistance(x:np.ndarray, y:np.ndarray)->float:
 
 	Parameters
 	----------
-	x, y : list
+	x, y : np.ndarray
 		Input 1-dimensional timeseries
 
 	Returns
 	-------
-	distance : int
+	distance : float
 		DTW distance
 	"""
 
