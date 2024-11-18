@@ -48,7 +48,7 @@ Dataset created:
     └── val
         └── features.csv        (174 entries)
     └─test
-        └─features.csv        (174 entries)
+        └── features.csv        (174 entries)
 ```
 
 [^1]: The feature exctraction procedure is close to that proposed by analogous Rust package [[docs]](https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html) but has been tuned significantly to be appropriate for the GRB X-Ray afterglows analysis. See `FeatureExtractor` class in `./utilities/SwiftXRTpreprocessing.py` for details
