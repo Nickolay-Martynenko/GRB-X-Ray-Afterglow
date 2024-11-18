@@ -172,7 +172,7 @@ def download_single_LC(
     os.mkdir('./tmp')
 
     dataframes = []
-
+    event_name = event_name.replace(' ', '%20')
     for mode in modes:
         url = PARENT_DIR_URL+f'SwiftXRT/{mode}/{event_name}.json'
         subprocess.run([
