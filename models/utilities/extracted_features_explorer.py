@@ -34,8 +34,12 @@ def explorer(df:pd.DataFrame, target_col:str='numbreaks'):
         ['numbreaks', 'sample']
     ]
     
-    print('correlation between latent features and '+
-      f'numbreaks: {np.corrcoef(fragment.drop('sample', axis=1).values, rowvar=False)[:-1, -1]}'
+    print('correlation between latent features and numbreaks: ',
+      np.round(
+        np.corrcoef(
+            fragment.drop('sample', axis=1).values, rowvar=False
+            )[:-1, -1], 
+        3)
     )
     
     X_train, y_train, X_val, y_val, X_test, y_test = (
