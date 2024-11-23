@@ -43,12 +43,12 @@ def explorer(df:pd.DataFrame, target_col:str='numbreaks'):
     )
     
     X_train, y_train, X_val, y_val, X_test, y_test = (
-        fragment.loc[fragment['sample'=='train'], features],
-        fragment.loc[fragment['sample'=='train'], 'numbreaks'],
-        fragment.loc[fragment['sample'=='val'], features],
-        fragment.loc[fragment['sample'=='val'], 'numbreaks'],
-        fragment.loc[fragment['sample'=='test'], features],
-        fragment.loc[fragment['sample'=='test'], 'numbreaks'],
+        fragment.loc[fragment['sample']=='train', features],
+        fragment.loc[fragment['sample']=='train', 'numbreaks'],
+        fragment.loc[fragment['sample']=='val', features],
+        fragment.loc[fragment['sample']=='val', 'numbreaks'],
+        fragment.loc[fragment['sample']=='test', features],
+        fragment.loc[fragment['sample']=='test', 'numbreaks'],
     )
     
     scaler = RobustScaler().fit(X_train)
