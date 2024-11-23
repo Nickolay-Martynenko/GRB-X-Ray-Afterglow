@@ -36,8 +36,9 @@ def visualize_latent(
     
     """
     Visualization Utility.
-    Only 1D, 2D or 3D data can be trivially visualized,
-    so the other datasets are truncated.
+    Only 2D or 3D data can be trivially visualized
+    using these function so the larger latent spaces
+    are projected on their first three components subpsace.
     
     Parameters
     ----------
@@ -76,7 +77,7 @@ def visualize_latent(
     columns = [col for col in df.columns if re.match(PATTERN, col)]
     dim = len(columns)
 
-    if (dim>=4 and not ignore_dim):
+    if ((dim>=4) or (dim<2)) and (not ignore_dim):
         raise ValueError(f'Unable to visualize {dim}D data')
     elif (dim>=4) and ignore_dim:
         print(f'Warning: {dim}D data truncated to 3D')
@@ -113,15 +114,6 @@ def visualize_latent(
         ax.scatter(
             df['feature_0'].values,
             df['feature_1'].values,
-            c=c, cmap=COLORMAP, s=32, marker='o'
-        )
-
-    if dim==1:
-        ax = fig.add_subplot()
-        np.random.seed(42)
-        ax.scatter(
-            df['feature_0'].values,
-            np.random.uniform(size=df['feature_0'].values.shape),
             c=c, cmap=COLORMAP, s=32, marker='o'
         )
     
