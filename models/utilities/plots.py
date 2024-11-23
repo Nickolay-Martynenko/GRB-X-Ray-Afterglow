@@ -134,6 +134,7 @@ def visualize_latent(
     plt.savefig(f'{savedir}/{title}.pdf', format='pdf', bbox_inches='tight')
 
     if show:
+        plt.gcf().set_dpi(300)
         plt.show()
     else:
         plt.close()
