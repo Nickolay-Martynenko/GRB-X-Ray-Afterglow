@@ -45,6 +45,8 @@ All the preprocessing scripts are stored in [`./utilities`](utilities) directory
 Additionally, a `GRBtable.csv` dataset is provided. It contains *Swift*-XRT analysis results semi-manually collected from the *Swift*-XRT repository.
 
 # Usage
+Without specific needs, please use the prepared datasets described above. Please note that in all the experiments with ML/DL models, the prepared datasets are directly downloaded from the online version of this repository using curl.
+
 Before you run the preprocessing script, please read the <a href="/README.md/#setup"> [setup instructions]</a> and install the requirements listed in [`requirements.txt`](requirements.txt)
 
 To see instructions:
