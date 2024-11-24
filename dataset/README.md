@@ -31,13 +31,12 @@ In our analysis, we develop four methods of the lightcurves preprocessing:
 3. ***Padding*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded with zeros.
 4. ***Interpolation*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are interpolated linearly using their closest non-missing neighbor entries.
 
-Additionally, we filter all incomplete and non-GRB events, and split our datasets into training (train), validation
-(val), and testing (test) fragments (70% $\div$ 15% $\div$ 15%, respectively), preserving the original nearly-uniform proportion of each year of observations in the resulting subsets. The split does not depend on the preprocessing method.
+Additionally, we filter all incomplete and non-GRB events, and split our datasets into training (`train`), validation (`val`), and testing (`test`) fragments (70% $\div$ 15% $\div$ 15%, respectively), preserving the original nearly-uniform proportion of each year of observations in the resulting subsets. The split does not depend on the preprocessing method.
 
 All the preprocessing scripts are stored in [`./utilities`](utilities) directory.
 
 # Prepared Dataset
-[`./Data`](./Data) directory contains preprocessed samples for each preprocessing method listed above: `original.csv`, `features.csv`, `padded.csv`, and `interp.csv`, respectively.
+[`./Data`](./Data) directory contains preprocessed [`train`](./Data/train), [`val`](./Data/val), and [`test`](./Data/test) samples for each preprocessing method listed above: `original.csv`, `features.csv`, `padded.csv`, and `interp.csv`, respectively. 
 
 Additionally, a `GRBtable.csv` dataset is provided. It contains *Swift*-XRT analysis results semi-manually collected from the *Swift*-XRT repository.
 
