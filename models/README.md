@@ -22,30 +22,34 @@ The following pseudo-code reflects the general steps:
 ```
 # Step 0. Declare directory with a pretrained model
 path = "./AutoEncoder/Architectures/AE_dim=3_archi=32_4"
-
+```
+```
 # Step 1. Create LitAE model
 model = LitAE(
     Encoder(latent_dim=3, architecture=(32, 4)),
     Decoder(latent_dim=3, architecture=(32, 4))
 )
-
+```
+```
 # Step 2. Create Trainer
 trainer = lightning.Trainer()
-
+```
+```
 # Step 3. Get predictions on your data
 trainer.test(
     model,
     dataloader,
     ckpt_path=f"{path}/best.ckpt"
 )
-
+```
+```
 # Step 4. Get labels
 labels = dataloader.dataset.label_enc.inverse_transform(
     model.test_result["labels"].astype(int)
 )
-
+```
+```
 # Step 5. Calculate weighted MSE on your data
-
 real = model.test_result['real'].squeeze()
 recon = model.test_result['recon'].squeeze()
 weight = model.test_result['weight'].squeeze()
@@ -56,15 +60,18 @@ weightedMSE = np.ma.masked_array(
     mask=~(weight.astype(bool))
 )
 weightedMSE = weightedMSE.mean(axis=1, keepdims=True)
-
+```
+```
 # Step 6. Load scoring function
 scoring = joblib.load(f"{path}/scoring.joblib")
-
+```
+```
 # Step 7. Calculate the p-values
 pvalues = np.exp(
     scoring(np.log10(weightedMSE))
 )
-
+```
+```
 # Step 8. Save result in a pandas DataFrame:
 result = pd.DataFrame(
     index=labels,
