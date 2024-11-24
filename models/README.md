@@ -14,6 +14,6 @@ To make it easier to reporduce all the experiments without thinking of data load
 Before you start working with the notebooks, please read the <a href="/README.md/#setup"> [setup instructions]</a> and install the requirements listed in either [`requirements.txt`](requirements.txt) (for ML models) or [`AutoEncoder/requirements.txt`](AutoEncoder/requirements.txt) (for AutoEncoder).
 
 # Load Pretrained AutoEncoder from Checkpoint
-Training of the AutoEncoder model on a local device is remarkably time-consuming. To use it without reproducing the training pipeline, the reader is encouraged to load a pre-trained model from a checkpoint, see [[docs]](https://lightning.ai/docs/pytorch/stable//common/checkpointing_basic.html). 
+Training of the AutoEncoder model on a local device is remarkably time-consuming. To use the model without reproducing the entire training loop, the reader is encouraged to load a pre-trained model from a checkpoint, see [[docs]](https://lightning.ai/docs/pytorch/stable//common/checkpointing_basic.html). 
 
 It is recommended to use *«Stadnard»* Architecture: [`best.ckpt`](./AutoEncoder/Architectures/AE_dim=3_archi=32_4/best.ckpt), but you can also try other checkpoints available in `./AutoEncoder/Architectures/` directory.
