@@ -57,7 +57,7 @@ When your work is finished, deactivate the environment:
 [^1]: Of course, you can assign the environment names at your discretion
 
 ## Contacts
-If you have any comments, suggestions or questions, please send them to [martynenko.ns18@physics.msu.ru](mailto:martynenko.ns18@physics.msu.ru?subject=GRB-X-Ray-Afterglow)
+If you have any comments, suggestions, or questions, please send them to [martynenko.ns18@physics.msu.ru](mailto:martynenko.ns18@physics.msu.ru?subject=GRB-X-Ray-Afterglow)
 
 ## Acknowledgements
 This work is greatly supported by Non-commercial Foundation for the Advancement of Science and Education INTELLECT.
