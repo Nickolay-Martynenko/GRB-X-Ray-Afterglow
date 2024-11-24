@@ -32,7 +32,7 @@ In our analysis, we develop four methods of the lightcurves preprocessing:
 4. ***Interpolation*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are interpolated linearly using their closest non-missing neighbor entries.
 
 Additionally, we filter all incomplete and non-GRB events, and split our datasets into training (train), validation
-(val) and testing (test) fragments (70% $\div$ 15% $\div$ 15%, respectively), preserving the original nearly-uniform proportion of each year of observations in the resulting subsets. The split does not depend on the preprocessing method.
+(val), and testing (test) fragments (70% $\div$ 15% $\div$ 15%, respectively), preserving the original nearly-uniform proportion of each year of observations in the resulting subsets. The split does not depend on the preprocessing method.
 
 All the preprocessing scripts are stored in [`./utilities`](utilities) directory.
 
