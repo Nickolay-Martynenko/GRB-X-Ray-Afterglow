@@ -12,7 +12,12 @@ In a few words, we are looking for such model that:
 We demonstrate that AutoEncoder is a promising model satisfying these criteria.
 
 ## Dataset
-This study focuses on *Swift*-XRT
+This study utilizes the *Swift*-XRT GRB lightcurve [[repository]](https://www.swift.ac.uk/xrt_curves/) data. The dataset is briefly described in [`dataset/README.md`](dataset/README.md)[^1] 
+
+We focus only on the basic lightcurve entries: the timestamps and source count rate, together with the errors of the latter. We present several preprocessing methods, see [`dataset/README.md`](dataset/README.md)
+
+## Models
+
 
 ## Tested Environment
 
@@ -27,7 +32,7 @@ Before trying to run anything on your device, please pay attention to the fact t
 ## Setup with Conda (recommended)
 Please consider installing [[miniconda3]](https://docs.anaconda.com/miniconda/install/) and working within individual [[environments]](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Following the instructions given below will ensure reproducibility, assuming that you work with code locally on your device.
 
-**Step 1.** Create a new `python 3.11.5` environment:[^1]
+**Step 1.** Create a new `python 3.11.5` environment:[^2]
 ```
 $ conda create -n GRB_env python==3.11.5 -y
 ```
@@ -61,11 +66,12 @@ If you do not need the created environment anymore, you can permanently remove i
 $ conda remove -n GRB_env --all -y
 ```
 
-[^1]: Of course, you can assign the environment names at your discretion
-
 ## Contacts
 If you have any comments, suggestions, or questions, please send them to [martynenko.ns18@physics.msu.ru](mailto:martynenko.ns18@physics.msu.ru?subject=GRB-X-Ray-Afterglow)
 
 ## Acknowledgements
 This work is greatly supported by Non-commercial Foundation for the Advancement of Science and Education INTELLECT.
 The author is indebted to G.I. Rubtsov, V.A. Nemchenko, and A.V. Ivchenko for helpful discussions.
+
+[^1]: For a detailed discussion, the reader is reffered to the official [[documentation]](https://www.swift.ac.uk/xrt_curves/docs.php).
+[^2]: Of course, you can assign the environment names at your discretion
