@@ -1,10 +1,15 @@
-# `dataset`
+# Preprocessing
+In our analysis, we develop four methods of the lightcurves preprocessing:
+1. ***Original*** method: Applies decimal logarithm to both timestamps and count rates and subtract a typical stationary background of about 1 count per 1000 seconds.
+2. ***FeatureExtraction*** method: Extracts relevant statistical features[^1] from the raw timeseries and thus converts lightcurves dataset to tabular data
+3. ***Padding*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded with zeros.
+4. ***Interpolation*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are interpolated linearly using their closest non-missing neighbor entries.
 
 ## `dataset/Data`
 The train, val and test samples created by `./utilities/make_dataset.py` script in various regimes:
 
 - `original.csv`: original basic lightcurves (timestamps, count rates and uncertainties) without rebinning
-- `features.csv`: lightcurve feature extraction approach[^1]
+- `features.csv`: lightcurve feature extraction approach
 - `padded.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded
 - `interp.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are linearly interpolated
 
