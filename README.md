@@ -11,12 +11,9 @@ We demonstrate that AutoEncoder is a promising model satisfying these criteria.
 
 ## Tested Environment
 
-| Parameter | Tested with |
-| --- | --- |
-| Operating System | macOS Sequoia 15.0.1 |
-| Python Version | 3.11.5 |
-| IDE/Editor | Jupyter Notebook 6.4.13 |
-| Hardware| MacBook Air (M1, 8GB RAM) |
+| Operating System  | Python Version | IDE/Editor | Hardware |
+| --- | --- | --- | --- |
+| macOS Sequoia 15.0.1 | 3.11.5 | Jupyter Notebook 6.4.13 | MacBook Air (M1, 8GB RAM) |
 
 Before trying to run anything on your device, please pay attention to the fact that:
 - directories in this repository contain their individual  `requirements.txt` files,
