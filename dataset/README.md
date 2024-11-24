@@ -47,16 +47,16 @@ The train, val and test samples created by `./utilities/make_dataset.py` script 
 Additionally, a `GRBtable.csv` dataset is provided. It contains *Swift*-XRT analysis results semi-manually collected from the *Swift*-XRT repository (see below).
 
 # Usage
-Before you run the preprocessing script, please read the Setup <a href="/README.md/#setup"> [instructions]</a> and install the requirements listed in [`requirements.txt`](requirements.txt)
+Before you run the preprocessing script, please read the <a href="/README.md/#setup"> [setup instructions]</a> and install the requirements listed in [`requirements.txt`](requirements.txt)
 
 To see instructions:
 ```
 (GRB_env) $ python ./utilities/make_dataset.py -h
 ```
 
-Example usage:
+Example usage:[^2]
 ```
-(GRB_env) $ python ./utilities/make_dataset.py -s SwiftXRT -n features -p extract_features    
+(GRB_env) $ python ./utilities/make_dataset.py -s SwiftXRT -n <name> -p <preprocesser>    
 ```
 The output would be:
 ```
@@ -71,17 +71,19 @@ Successfully processed 2443 json files. Found 1579 unique events
 100%|███████████████████████| 1579/1579 [00:08<00:00, 190.06it/s]
 Successfully preprocessed 1579 lightcurves.
 Found 1158 lightcurves satisfying the requirements.
-Preprocessing algorithm used: `extract_features(...)`
+Preprocessing algorithm used: `<preprocesser>(...)`
 
 Dataset created:
 .
 └── Data
     └── train
-        └── features.csv        (810 entries)
+        └── <name>.csv        (810 entries)
     └── val
-        └── features.csv        (174 entries)
+        └── <name>.csv        (174 entries)
     └─test
-        └── features.csv        (174 entries)
+        └── <name>.csv        (174 entries)
 ```
 
-[^1]: The feature exctraction procedure is close to that proposed by analogous Rust package [[docs]](https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html) but has been tuned significantly to be appropriate for the GRB X-Ray afterglows analysis. See `FeatureExtractor` class in `./utilities/SwiftXRTpreprocessing.py` for details
+[^1]: The feature exctraction procedure is close to that proposed by analogous Rust package [[docs]](https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html) but has been tuned significantly to be appropriate for the GRB X-Ray afterglows analysis. See `FeatureExtractor` class in [`./utilities/SwiftXRTpreprocessing.py`](./utilities/SwiftXRTpreprocessing.py) for details
+
+[^2]: Replace `<name>` and `<preprocesser>` with a desired filename and a valid preprocessing function name, e.g. `features` and `extract_features`. Add optional argument via `-r` to set the rebinning method
