@@ -29,7 +29,7 @@ Before trying to run anything on your device, please pay attention to the fact t
 - directories in this repository contain their individual  `requirements.txt` files,
 - list of packages provided in each `requirements.txt` file assumes that you have already installed python and Jupyter Notebook, as well as the corresponding dependencies on your device.
 
-## Setup with Conda (recommended)
+## Setup with Conda (recommended) {#setup}
 Please consider installing [[miniconda3]](https://docs.anaconda.com/miniconda/install/) and working within individual [[environments]](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html). Following the instructions given below will ensure reproducibility, assuming that you work with code locally on your device.
 
 **Step 1.** Create a new `python 3.11.5` environment:[^*]
