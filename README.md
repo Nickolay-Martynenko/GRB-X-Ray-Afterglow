@@ -49,9 +49,13 @@ You can now work with:
   
 respectively. For details, please read `<directory>/README.md`. 
 
-When your work is finished, deactivate the environment:
+**Step 4.** When your work is finished, deactivate the environment:
 ```
 (GRB_env) $ conda deactivate
+```
+If you do not need the created environment anymore, you can permanently remove it by:
+```
+$ conda remove -n GRB_env --all -y
 ```
 
 [^1]: Of course, you can assign the environment names at your discretion
