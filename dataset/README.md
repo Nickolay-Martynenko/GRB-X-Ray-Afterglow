@@ -26,7 +26,7 @@ See also a detailed lightcurve documentation: [[docs]](https://www.swift.ac.uk/x
 
 # Preprocessing
 In our analysis, we develop four methods of the lightcurves preprocessing:
-1. ***Original*** method: Applies decimal logarithm to both timestamps and count rates and subtract a typical stationary background of about 1 count per 1000 seconds.
+1. ***Original*** method: Applies decimal logarithm to both timestamps and count rates and subtract a typical stationary background of about 1 count per 1000 seconds. The source count rate +/- errors are symmetrized using their mean in the logarithmic scale (equivalent to a geometric mean in the original scale).
 2. ***FeatureExtraction*** method: Extracts relevant statistical features[^1] from the raw timeseries and thus converts lightcurves dataset to tabular data
 3. ***Padding*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded with zeros.
 4. ***Interpolation*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are interpolated linearly using their closest non-missing neighbor entries.
