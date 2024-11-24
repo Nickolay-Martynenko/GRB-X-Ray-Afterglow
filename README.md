@@ -7,7 +7,7 @@ However, the present-day analysis of GRB X-Ray Afterglow Lightcurves is highly m
 
 In a few words, we are looking for such model that:
 - encodes an X-Ray lightcurve in terms of 2-3 features, which correlate with the lightcurve morphology (e.g. with the number of breaks)
-- estimates the anomaly measure for each lightcurve and, using this measure, detects at least conventionally anomalous GRBs such as GRB 221009A
+- estimates the anomaly measure for each lightcurve and, using this measure, detects at least conventionally anomalous GRBs such as GRB 221009A (its X-Ray afterglow lightcurve together with the corresponding pseudo-color timelapse animation, both measured by *Swift*-XRT, are shown in the figure above)
 
 We demonstrate that AutoEncoder is a promising model satisfying these criteria.
 
