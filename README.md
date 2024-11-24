@@ -74,4 +74,4 @@ If you have any comments, suggestions, or questions, please send them to [martyn
 This work is greatly supported by Non-commercial Foundation for the Advancement of Science and Education INTELLECT.
 The author is indebted to G.I. Rubtsov, V.A. Nemchenko, and A.V. Ivchenko for helpful discussions.
 
-[^*]: Of course, you can assign the environment names at your discretion
+[^*]: Of course, istead of `GRB_env` you can assign the environment names at your discretion
