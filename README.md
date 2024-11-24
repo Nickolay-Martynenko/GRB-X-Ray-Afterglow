@@ -4,8 +4,10 @@ A great diversity of the Gamma-Ray Bursts (GRBs) *prompt emission* together with
 However, the present-day analysis of GRB X-Ray Afterglow Lightcurves is highly model-dependent, which obstructs a robust anomaly detection. Here we address this issue and develop a number of model-independent anomaly detection techniques utilizing Machine Learning and Deep Learning models. 
 
 In a few words, we are looking for such model that:
-- encodes a lightcurve in terms of 2-3 features, which correlate with the morphology (e.g. with the number of breaks)
+- encodes an X-Ray lightcurve in terms of 2-3 features, which correlate with the lightcurve morphology (e.g. with the number of breaks)
 - estimates the anomaly measure for each lightcurve and, using this measure, detects at least conventionally anomalous GRBs such as GRB 221009A
+
+We demonstrate that AutoEncoder is a promising model satisfying these criteria.
 
 ## Tested Environment
 
