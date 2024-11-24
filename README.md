@@ -1,5 +1,5 @@
 # Uncovering Anomalies in Gamma-Ray Bursts X-Ray Afterglows
-![image](https://upload.wikimedia.org/wikipedia/commons/8/8b/NASA_Missions_Probe_What_May_Be_a_1-In-10%2C000-Year_Gamma-ray_Burst_%28SVS14317_-_Swift_rings_221009A_labels_1080%29.gif) 
+<img src="https://upload.wikimedia.org/wikipedia/commons/8/8b/NASA_Missions_Probe_What_May_Be_a_1-In-10%2C000-Year_Gamma-ray_Burst_%28SVS14317_-_Swift_rings_221009A_labels_1080%29.gif" width=300 height=300/>
 A great diversity of the Gamma-Ray Bursts (GRBs) *prompt emission* together with a relatively small number of detected events (several thousand), significantly limit the use of statistical tools in distinguishing between the “ordinary” and “anomalous” objects.  In contrast, the X-Ray *afterglow emission* exhibits a high universality, which makes the statistical approach possible.
 
 However, the present-day analysis of GRB X-Ray Afterglow Lightcurves is highly model-dependent, which obstructs a robust anomaly detection. Here we address this issue and develop a number of model-independent anomaly detection techniques utilizing Machine Learning and Deep Learning models. 
