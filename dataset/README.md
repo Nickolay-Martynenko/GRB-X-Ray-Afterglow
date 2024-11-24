@@ -36,7 +36,11 @@ Additionally, we filter all incomplete and non-GRB events, and split our dataset
 All the preprocessing scripts are stored in [`./utilities`](utilities) directory.
 
 # Prepared Dataset
-[`./Data`](./Data) directory contains preprocessed [`train`](./Data/train), [`val`](./Data/val), and [`test`](./Data/test) samples for each preprocessing method listed above: `original.csv`, `features.csv`, `padded.csv`, and `interp.csv`, respectively. 
+[`./Data`](./Data) directory contains preprocessed [`train`](./Data/train), [`val`](./Data/val), and [`test`](./Data/test) samples for each preprocessing method listed above, respectively:
+1. `original.csv`
+2. `features.csv`
+3. `padded.csv`
+4. `interp.csv` 
 
 Additionally, a `GRBtable.csv` dataset is provided. It contains *Swift*-XRT analysis results semi-manually collected from the *Swift*-XRT repository.
 
