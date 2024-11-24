@@ -1,6 +1,6 @@
-# Dataset & Related Utilities
+# `dataset`
 
-## `./Data`
+## `dataset/Data`
 The train, val and test samples created by `./utilities/make_dataset.py` script in various regimes:
 
 - `original.csv`: original basic lightcurves (timestamps, count rates and uncertainties) without rebinning
@@ -10,10 +10,10 @@ The train, val and test samples created by `./utilities/make_dataset.py` script 
 
 Additionally, a `GRBtable.csv` dataset is provided. It contains *Swift*-XRT analysis results semi-manually collected from the *Swift*-XRT repository (see below).
 
-## `./SwiftXRT`
+## `dataset/SwiftXRT`
 Raw *Swift*-XRT GRB lightcurves repository[^2] data
 
-## `./utilities`
+## `dataset/utilities`
 *Swift*-XRT data preprocessing utilities. Unless a specific user-defined preprocessing is needed, please use `./utilities/make_dataset.py`. Note that this is optional, since all the datasets are already created and can be found in `./Data` directory. 
 
 To see instructions:
