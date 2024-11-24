@@ -17,7 +17,7 @@ This study utilizes the *Swift*-XRT GRB lightcurve [[repository]](https://www.sw
 We focus only on the basic lightcurve entries: the timestamps and source count rate, together with the errors of the latter. We develop and use four preprocessing methods, see [`dataset/README.md`](dataset/README.md)
 
 ## Models
-
+We analyse lightcurves using Density-based spatial clustering of applications with noise (DBSCAN), IsolaitonForest, Kernel principal component analysis (KernelPCA), and AutoEncoder. Each model is accompanied by  its own pipeline of pre-/postprocessing steps. See  [`models/README.md`](models/README.md) for details.
 
 ## Tested Environment
 
