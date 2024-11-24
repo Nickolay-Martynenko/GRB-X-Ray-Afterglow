@@ -10,3 +10,5 @@ Finally, we manually analyse top anomalous-scored samples, and try to argue what
 
 # Usage
 To make it easier to reporduce all the experiments without thinking of data loading and data preprocessing (e.g. in Google Colab), the data sets are downloaded directly from this repository using curl. If one prefers to use local paths instead of URLs, it can be achieved manually (see [`dataset`](/dataset) directory in this repository).
+
+Before you run the preprocessing script, please read the <a href="/README.md/#setup"> [setup instructions]</a> and install the requirements listed in [`requirements.txt`](requirements.txt) (for ML models) or in [`AutoEncoder/requirements.txt`](AutoEncoder/requirements.txt) (for AutoEncoder).
