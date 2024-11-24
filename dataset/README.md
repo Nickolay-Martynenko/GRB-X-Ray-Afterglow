@@ -31,6 +31,21 @@ In our analysis, we develop four methods of the lightcurves preprocessing:
 3. ***Padding*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded with zeros.
 4. ***Interpolation*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are interpolated linearly using their closest non-missing neighbor entries.
 
+Additionally, we filter all incomplete and non-GRB events, and split our datasets into training (train), validation
+(val) and testing (test) fragments (70% $\div$ 15% $\div$ 15%, respectively), preserving the original nearly-uniform proportion of each year of observations in the resulting subsets. The split does not depend on the preprocessing method.
+
+All the preprocessing scripts are stored in [`./utilities`](utilities) directory.
+
+# Prepared Dataset
+The train, val and test samples created by `./utilities/make_dataset.py` script in various regimes:
+
+- `original.csv`: original basic lightcurves (timestamps, count rates and uncertainties) without rebinning
+- `features.csv`: lightcurve feature extraction approach
+- `padded.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded
+- `interp.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are linearly interpolated
+
+Additionally, a `GRBtable.csv` dataset is provided. It contains *Swift*-XRT analysis results semi-manually collected from the *Swift*-XRT repository (see below).
+
 # Usage
 Before you run the preprocessing script, please read the Setup <a href="/README.md/#setup"> [instructions]</a> and install the requirements listed in [`requirements.txt`](requirements.txt)
 
@@ -68,21 +83,5 @@ Dataset created:
     └─test
         └── features.csv        (174 entries)
 ```
-
-## `dataset/Data`
-The train, val and test samples created by `./utilities/make_dataset.py` script in various regimes:
-
-- `original.csv`: original basic lightcurves (timestamps, count rates and uncertainties) without rebinning
-- `features.csv`: lightcurve feature extraction approach
-- `padded.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded
-- `interp.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are linearly interpolated
-
-Additionally, a `GRBtable.csv` dataset is provided. It contains *Swift*-XRT analysis results semi-manually collected from the *Swift*-XRT repository (see below).
-
-## `dataset/SwiftXRT`
-Raw *Swift*-XRT GRB lightcurves repository[^2] data
-
-## `dataset/utilities`
-*Swift*-XRT data preprocessing utilities. Unless a specific user-defined preprocessing is needed, please use `./utilities/make_dataset.py`. Note that this is optional, since all the datasets are already created and can be found in `./Data` directory. 
 
 [^1]: The feature exctraction procedure is close to that proposed by analogous Rust package [[docs]](https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html) but has been tuned significantly to be appropriate for the GRB X-Ray afterglows analysis. See `FeatureExtractor` class in `./utilities/SwiftXRTpreprocessing.py` for details
