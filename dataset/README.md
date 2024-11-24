@@ -37,14 +37,9 @@ Additionally, we filter all incomplete and non-GRB events, and split our dataset
 All the preprocessing scripts are stored in [`./utilities`](utilities) directory.
 
 # Prepared Dataset
-The train, val and test samples created by `./utilities/make_dataset.py` script in various regimes:
+[`./Data`](./Data) directory contains preprocessed samples for each preprocessing method listed above: `original.csv`, `features.csv`, `padded.csv`, and `interp.csv`, respectively.
 
-- `original.csv`: original basic lightcurves (timestamps, count rates and uncertainties) without rebinning
-- `features.csv`: lightcurve feature extraction approach
-- `padded.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are padded
-- `interp.csv`: basic lightcurves rebinned to a uniform time grid in the decimal logarithm scale; missing values are linearly interpolated
-
-Additionally, a `GRBtable.csv` dataset is provided. It contains *Swift*-XRT analysis results semi-manually collected from the *Swift*-XRT repository (see below).
+Additionally, a `GRBtable.csv` dataset is provided. It contains *Swift*-XRT analysis results semi-manually collected from the *Swift*-XRT repository.
 
 # Usage
 Before you run the preprocessing script, please read the <a href="/README.md/#setup"> [setup instructions]</a> and install the requirements listed in [`requirements.txt`](requirements.txt)
@@ -86,4 +81,4 @@ Dataset created:
 
 [^1]: The feature exctraction procedure is close to that proposed by analogous Rust package [[docs]](https://docs.rs/light-curve-feature/latest/light_curve_feature/features/index.html) but has been tuned significantly to be appropriate for the GRB X-Ray afterglows analysis. See `FeatureExtractor` class in [`./utilities/SwiftXRTpreprocessing.py`](./utilities/SwiftXRTpreprocessing.py) for details
 
-[^2]: Replace `<name>` and `<preprocesser>` with a desired filename and a valid preprocessing function name, e.g. `features` and `extract_features`. Add optional argument via `-r` to set the rebinning method
+[^2]: Replace `<name>` and `<preprocesser>` with a desired filename and a valid preprocessing function name, respectively, e.g. `features` and `extract_features`. Add an optional argument via `-r` to set the rebinning method
