@@ -32,14 +32,16 @@ In our analysis, we develop four methods of the lightcurves preprocessing:
 4. ***Interpolation*** method: *Original* lightcurves are rebinned to a uniform time grid in the decimal logarithm scale; missing values are interpolated linearly using their closest non-missing neighbor entries.
 
 # Usage
+Before you run the preprocessing script, please read the Setup <a href="/README.md/#setup"> [instructions]</a> and install the requirements listed in [`requirements.txt`](requirements.txt)
+
 To see instructions:
 ```
-$ python3 ./utilities/make_dataset.py -h
+(GRB_env) $ python ./utilities/make_dataset.py -h
 ```
 
 Example usage:
 ```
-$ python3 ./utilities/make_dataset.py -s SwiftXRT -n features -p extract_features    
+(GRB_env) $ python ./utilities/make_dataset.py -s SwiftXRT -n features -p extract_features    
 ```
 The output would be:
 ```
