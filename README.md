@@ -1,5 +1,5 @@
 # Uncovering Anomalies in Gamma-Ray Bursts X-Ray Afterglows
-<img src="figures/GRB221009A.gif"/>
+<img src="figures/GRB221009Awide.gif" />
 
 A great diversity of the Gamma-Ray Bursts (GRBs) *prompt emission* together with a relatively small number of detected events (several thousand), significantly limit the use of statistical tools in distinguishing between the “ordinary” and “anomalous” objects.  In contrast, the X-Ray *afterglow emission* exhibits a high universality, which makes the statistical approach possible.
 
