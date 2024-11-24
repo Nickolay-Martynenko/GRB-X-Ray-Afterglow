@@ -1,15 +1,18 @@
 # Uncovering Anomalies in Gamma-Ray Bursts X-Ray Afterglows
 <img src="figures/GRB221009Awide.gif" />
 
-A great diversity of the Gamma-Ray Bursts (GRBs) *prompt emission* together with a relatively small number of detected events (several thousand), significantly limit the use of statistical tools in distinguishing between the “ordinary” and “anomalous” objects.  In contrast, the X-Ray *afterglow emission* exhibits a high universality, which makes the statistical approach possible.
+A great diversity of the Gamma-Ray Bursts (GRBs) *prompt emission* together with a relatively small number of detected events (several thousand) significantly limit the use of statistical tools in distinguishing between the “ordinary” and “anomalous” objects.  In contrast, the X-Ray *afterglow emission* exhibits a high universality, which makes the statistical approach possible.
 
-However, the present-day analysis of GRB X-Ray Afterglow Lightcurves is highly model-dependent, which obstructs a robust anomaly detection. Here we address this issue and develop a number of model-independent anomaly detection techniques utilizing Machine Learning and Deep Learning models. 
+However, the present-day analysis of GRB X-Ray afterglow lightcurves is highly model-dependent and probably oversimplified, which obstructs a robust anomaly detection. Here we address this issue and develop a number of model-independent anomaly detection techniques utilizing Machine Learning and Deep Learning models. 
 
 In a few words, we are looking for such model that:
 - encodes an X-Ray lightcurve in terms of 2-3 features, which correlate with the lightcurve morphology (e.g. with the number of breaks)
 - estimates the anomaly measure for each lightcurve and, using this measure, detects at least conventionally anomalous GRBs such as GRB 221009A (its X-Ray afterglow lightcurve together with the corresponding pseudo-color timelapse animation, both measured by *Swift*-XRT, are shown in the figure above)
 
 We demonstrate that AutoEncoder is a promising model satisfying these criteria.
+
+## Dataset
+This study focuses on *Swift*-XRT
 
 ## Tested Environment
 
