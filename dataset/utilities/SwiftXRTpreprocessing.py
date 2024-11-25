@@ -7,7 +7,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import HuberRegressor
 from tqdm import tqdm
 
-
 LOG10 = 2.302585092994046
 PATTERN = r'GRB [0-9]{2}[0-1]{1}[0-9]{1}[0-3]{1}[0-9]{1}[A-Z]?'
 
@@ -276,7 +275,7 @@ def rebin(dataframe:pd.DataFrame,
             of time in seconds if `regime` is not 'none'.
             Otherwise, decimal logarithm of the original timestamps.
     """
-    
+
     assert regime in [
         'padding',
         'linear_interpolation',
@@ -1144,8 +1143,9 @@ def make_dataset(SwiftXRTdict:dict,
         Optional keyword arguments to be passed to preprocesser.
     random_state : int, default=20041120
         Random state used in the train-val-test split.
-        Default value is the Swift Observatory launch date (20 Nov 2004),
-        it guarantees that the outlier GRB 221009A is sent to test set.
+        Default value is the Swift Observatory 
+        launch date (20 Nov 2004), it guarantees that the
+        outlier GRB 221009A is sent to the testing fragment.
 
     Returns
     -------
