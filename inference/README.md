@@ -29,7 +29,7 @@ HPU available: False, using: 0 HPUs
 [Predictions]: In progress...
 Testing DataLoader 0: 100%|██████████████████████| 1/1 [00:00<00:00,  7.37it/s]
 [Predictions]: Job complete!
-The output table is available at './scored_samples.csv'
+The output table is stored at './scored_samples.csv'
 ```
 **Step 3.** Look at [`scored_samples.csv`](scored_samples.csv) (through the link, you can access the output produced for the [`example_input`](example_input) file). The columns are: 
 
