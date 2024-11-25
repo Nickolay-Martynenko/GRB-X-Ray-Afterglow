@@ -32,6 +32,9 @@ Testing DataLoader 0: 100%|█████████████████�
 The output table is stored at './scored_samples.csv'
 ```
 **Step 3.** Look at [`scored_samples.csv`](scored_samples.csv) (through the link, you can access the output produced for the [`example_input`](example_input) file). The columns are: 
-
 - **info**: the message generated while processing the event
-      - 
+  - `complete_lightcurve` : data collected and processed successfully
+  - `incomplete_lightcurve` : the passed event name is valid, but the lightcurve is too short to analyse it
+  - `missing_data` : the passed event name is valid, but neither PC_incbad nor WT_incbad dataset is available for this event, so nothing to process
+  - `not_found` : the passed event name not found in the Swift-XRT repository
+- **p-value**: for complete lightcurves, the estimated $p$-value; otherwise, empty cell
