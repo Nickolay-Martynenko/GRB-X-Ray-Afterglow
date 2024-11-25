@@ -246,6 +246,7 @@ def load_model_scoring(
             './_from_GitHub_best.ckpt',
             **create_encoder_decoder(latent_dim, architecture)
         )
+        url = PARENT_DIR_URL+f'/{exp_name}/scoring.joblib'
         subprocess.run(['curl', '-o', './_from_GitHub_scoring.joblib', '-s',
                     '--show-error', f'{url}'])
         scoring = joblib.load('./_from_GitHub_scoring.joblib')

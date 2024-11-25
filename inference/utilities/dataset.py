@@ -3,6 +3,7 @@ import pandas as pd
 from torch import as_tensor, from_numpy
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
+from requests.exceptions import ConnectTimeout
 from sklearn.preprocessing import LabelEncoder
 from swifttools.ukssdc.data.GRB import GRBNameToTargetID, getLightCurves
 
@@ -238,11 +239,17 @@ def get_SwiftXRTLightCurves(event_names_list:list)->tuple:
 
         targetID = GRBNameToTargetID(event, silent=True)
         if targetID is not None:
-            lc = getLightCurves(
-                targetID=targetID,
-                saveData=False, returnData=True, silent=True,
-                incbad="yes")
-            lcData[event] = lc
+            try:
+                lc = getLightCurves(
+                    targetID=targetID,
+                    saveData=False, returnData=True, silent=True,
+                    incbad="yes", nosys="no")
+                lcData[event] = lc
+            except ConnectTimeout:
+                print(
+                    f'[Warning]: Event {event} is resolved as'+
+                    f'targetID={targetID}\nbut Swift-XRT repository is not responding'
+                )
 
     lightcurves_info = dict()
     for event in unique_names:
