@@ -47,7 +47,7 @@ Testing DataLoader 0: 100%|█████████████████�
 [Predictions]: Job complete!
 The output table is saved in the './output.csv' file
 ```
-**Step 3.** The output is saved in the csv file (through the link [`output.csv`](output.csv) you can access the output produced for the [`example_input`](example_input) file). The event names are sorted alphabetically. The columns are: 
+**Step 3.** The output is saved in the csv file (through the link [`example_output.csv`](example_output.csv) you can look at the output produced for the [`example_input`](example_input) file). The event names are sorted alphabetically. The columns are: 
 - **info**: the message generated while processing the event
   - `complete_lightcurve` : data collected and processed successfully
   - `incomplete_lightcurve` : the passed event name is valid, but the lightcurve is too short to analyse it
