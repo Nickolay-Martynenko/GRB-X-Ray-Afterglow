@@ -29,7 +29,7 @@ Assuming that your `<input-file>` includes 100 events in total, of which 20 have
 ```
 [Processing]: Sending request to the Swift-XRT repository...
 Please be patient, this may be time-consuming
-100%|████████████████████████████████████████████| 24/24 [00:15<00:00,  1.55it/s]
+100%|████████████████████████████████████████████| 100/100 [01:02<00:00,  1.61it/s]
 [Processing]: Found 75 out of 100 requested events
 [Processing]: Rebinning in progress...
 [Processing]: Rebinning finished
@@ -43,7 +43,7 @@ Please be patient, this may be time-consuming
 GPU available: True (mps), used: True
 TPU available: False, using: 0 TPU cores
 HPU available: False, using: 0 HPUs
-Testing DataLoader 0: 100%|████████████████████████| 1/1 [00:06<00:00,  8.12it/s]
+Testing DataLoader 0: 100%|████████████████████████| 1/1 [00:06<00:00,  8.33it/s]
 [Predictions]: Job complete!
 The output table is saved in the './output.csv' file
 ```
