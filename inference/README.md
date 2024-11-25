@@ -15,7 +15,7 @@ Please look at an example input file [`example_input`](example_input) (non-exist
 Assuming that your `<input-file>` includes 100 events in total, of which 25 have invalid names and another 25 have incomplete lightcurves:
 ```
 [Processing]: Sending request to the Swift-XRT repository...
-[Processing]: Please be patient, this may be time-consuming
+Please be patient, this may be time-consuming
 [Processing]: Found 75 out of 100 requested events
 [Processing]: Rebinning in progress...
 [Processing]: Rebinning finished
@@ -31,9 +31,9 @@ HPU available: False, using: 0 HPUs
 [Predictions]: In progress...
 Testing DataLoader 0: 100%|███████████████████████| 1/1 [00:02<00:00,  0.55it/s]
 [Predictions]: Job complete!
-The full output table is stored at './scored_samples.csv'
+The output table is saved in the './scored_samples.csv' file
 ```
-**Step 3.** Look at [`scored_samples.csv`](scored_samples.csv) (through the link, you can access the output produced for the [`example_input`](example_input) file). The columns are: 
+**Step 3.** The output is saved in the [`scored_samples.csv`](scored_samples.csv) file (through the link, you can access the output produced for the [`example_input`](example_input) file). The columns are: 
 - **info**: the message generated while processing the event
   - `complete_lightcurve` : data collected and processed successfully
   - `incomplete_lightcurve` : the passed event name is valid, but the lightcurve is too short to analyse it
