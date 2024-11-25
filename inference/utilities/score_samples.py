@@ -53,4 +53,5 @@ print(info.head())
 print("\nThe full output table is available in './scored_samples.csv'")
 
 shutil.rmtree(f"{os.path.dirname(__file__)}/__pycache__")
+shutil.rmtree(f"{os.path.dirname(__file__)}/../../dataset/utilities/__pycache__")
 
