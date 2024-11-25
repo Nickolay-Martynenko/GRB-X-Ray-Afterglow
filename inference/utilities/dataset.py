@@ -9,6 +9,12 @@ from swifttools.ukssdc.data.GRB import GRBNameToTargetID, getLightCurves
 
 LOG10 = 2.302585092994046
 
+# to make inference/utilities completely 
+# independent from the other local modules 
+# developed in this project, we intentionally
+# not _imported_ the functions/classes from other
+# modules but _copied_ the source code
+
 def complete_lightcurve(dataframe:pd.DataFrame,
     min_timestamps:int=4, bins:tuple=(1, 7, 64),
     min_bins:int=8)->bool:
