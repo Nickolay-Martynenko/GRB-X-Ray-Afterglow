@@ -4,11 +4,20 @@ Before you start working with the scripts, please read the <a href="/README.md/#
 
 **Step 1.** Prepare your `<input-file>`. It should be GRB names you want to score, listed line-by-line. 
 
-If some names do not correspond to any GRB in the *Swift*-XRT lightcurves repository, they will not be further processed. If some names are listed more than once, they will be processed only once. If some of the found lightcurves are incomplete (that is, include less than 4 data points or span less than 8 bins on the rebinned grid), they also will not be further processed.
+If some of the passed events:
+- listed more than once, they will be processed only once
+- do not correspond to any confirmed GRB in the *Swift*-XRT lightcurves repository, they will not be further processed
+- have incomplete lightcurve (that is, include less than 4 data points or span less than 8 bins on the rebinned uniform log-time grid), they also will not be further processed
 
-Please look at an example input file [`example_input`](example_input) (non-existing and non-GRB events are intentionally added for illustration).
+Note that for technical reasons, the *Swift*-XRT repository may sometimes be unavailable, even if your internet connection is stable. Whenever `ConnectTimeout` exception arises while requesting event, a corresponding warning will be shown. The time-outed request also will not be further processed.
 
-**Step 2.** Once the `<input-file>` is prepared and the requirements are installed, run:
+Please look at an example input file [`example_input`](example_input) (a number of non-existing and non-GRB events are intentionally added for illustration).
+
+**Step 2.** Once the `<input-file>` is prepared and the requirements are installed, you can run `score_samples` script. To see instructions:
+```
+(GRB_env) $ python ./utilities/score_samples.py -h
+```
+To use a default configuration (that is, to load the recommended model directly from this repository via curl), just run:
 ```
 (GRB_env) $ python ./utilities/score_samples.py <input-file>
 ```

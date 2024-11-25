@@ -235,9 +235,16 @@ def get_SwiftXRTLightCurves(event_names_list:list)->tuple:
     for event in tqdm(unique_names):
         # Here we are trying to avoid a bug in swifttools:
         # the current verison getLightCurves function cannot 
-        # easily skip errors caused by unresolved GRBs
+        # easily skip errors caused by unresolved GRBs / connect timeout
 
-        targetID = GRBNameToTargetID(event, silent=True)
+        try:
+            targetID = GRBNameToTargetID(event, silent=True)
+        except ConnectTimeout:
+            print(
+                f'[Warning]: Event {event} is not resolved. '+
+                'Swift-XRT repository is not responding.\nPlease check your internet connection and try again later'
+            )
+            targetID = None
         if targetID is not None:
             try:
                 lc = getLightCurves(
