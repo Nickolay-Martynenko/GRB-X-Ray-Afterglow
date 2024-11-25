@@ -21,31 +21,32 @@ To use a default configuration (that is, to load the recommended model directly 
 ```
 (GRB_env) $ python ./utilities/score_samples.py <input-file>
 ```
-Assuming that your `<input-file>` includes 100 events in total, of which 25 have invalid names and another 25 have incomplete lightcurves:
+Assuming that your `<input-file>` includes 100 events in total, of which 20 have invalid names and another 30 have incomplete lightcurves, the output would be:
 ```
 [Processing]: Sending request to the Swift-XRT repository...
 Please be patient, this may be time-consuming
+100%|████████████████████████████████████████████| 24/24 [00:15<00:00,  1.55it/s]
 [Processing]: Found 75 out of 100 requested events
 [Processing]: Rebinning in progress...
 [Processing]: Rebinning finished
 [Processing]: Job complete!
     complete_lightcurve    : 50 entries
-    incomplete_lightcurve  : 25 entries
-    not_found              : 25 entries
+    incomplete_lightcurve  : 30 entries
+    not_found              : 20 entries
 [Loading model]: In progress...
+[Loading model]: Job complete!
+[Predictions]: In progress...
 GPU available: True (mps), used: True
 TPU available: False, using: 0 TPU cores
 HPU available: False, using: 0 HPUs
-[Loading model]: Job complete!
-[Predictions]: In progress...
-Testing DataLoader 0: 100%|███████████████████████| 1/1 [00:02<00:00,  0.55it/s]
+Testing DataLoader 0: 100%|████████████████████████| 1/1 [00:06<00:00,  8.12it/s]
 [Predictions]: Job complete!
-The output table is saved in the './scored_samples.csv' file
+The output table is saved in the './output.csv' file
 ```
-**Step 3.** The output is saved in the [`scored_samples.csv`](scored_samples.csv) file (through the link, you can access the output produced for the [`example_input`](example_input) file). The columns are: 
+**Step 3.** The output is saved in the csv file (through the link [`output.csv`](output.csv) you can access the output produced for the [`example_input`](example_input) file). The columns are: 
 - **info**: the message generated while processing the event
   - `complete_lightcurve` : data collected and processed successfully
   - `incomplete_lightcurve` : the passed event name is valid, but the lightcurve is too short to analyse it
   - `missing_data` : the passed event name is valid, but neither PC_incbad nor WT_incbad dataset is available for this event, so nothing to process
-  - `not_found` : the passed event name not found in the Swift-XRT repository
+  - `not_found` : the passed event name not found in the *Swift*-XRT repository (due to either invalid name or a connection timeout issue)
 - **p-value**: for complete lightcurves, the estimated $p$-value; otherwise, empty cell
