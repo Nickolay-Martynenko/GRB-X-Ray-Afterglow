@@ -1,48 +1,194 @@
-import os
-import sys
-
 import numpy as np
 import pandas as pd
-
-import torch
+from torch import as_tensor, from_numpy
 from torch.utils.data import Dataset, DataLoader
-
+from tqdm import tqdm
 from sklearn.preprocessing import LabelEncoder
 from swifttools.ukssdc.data.GRB import GRBNameToTargetID, getLightCurves
 
-module_path = os.path.abspath(os.path.join('../dataset'))
-if module_path not in sys.path:
-    sys.path.append(module_path)
+def complete_lightcurve(dataframe:pd.DataFrame,
+    min_timestamps:int=4, bins:tuple=(1, 7, 64),
+    min_bins:int=8)->bool:
+    """
+    Detects complete/incomplete lightcurves
 
-from utilities.SwiftXRTpreprocessing import complete_lightcurve
-from utilities.SwiftXRTpreprocessing import rebin
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        DataFrame with the raw Swift-XRT lightcurve data.
+    min_timestamps : int, default=4
+        Minimal required timestamps for 
+        the lightcurve to be 'complete'
+    bins : tuple, default=(1, 7, 64)
+        start, stop, number of bins
+        in the decimal log-uniform timescale
+    min_bins : int, default=8
+        Minimal required non-empty bins for 
+        the lightcurve to be 'complete'
 
-class LightCurveDataset(Dataset):
-    def __init__(self, dataframe:pd.DataFrame,
-                 data_col:str='lgRate',
-                 weight_col:str='weight'):
+    Returns
+    -------
+    flag : bool
+        If True, the lightcurve is complete. 
+        Otherwise, the lightcurve is incomplete.
+    """
+
+    flag = True
+    timeseries = dataframe['Time'].values
+
+    if len(timeseries) < min_timestamps:
+        flag = False
+        return flag
+    else:
+        hist, _ = np.histogram(
+            timeseries,
+            bins=np.logspace(*bins)
+        )
+        if np.sum( (hist > 0).astype(int) ) < min_bins:
+            flag = False
+            return flag
+
+    return flag
+
+def rebin(dataframe:pd.DataFrame,
+    lgTime_min:float=1.0, lgTime_max:float=7.0,
+    lgTime_nbins:int=64, regime:str='padding',
+    padding:float=-3.0, subtract_background:bool=True)->dict:
+    """
+    Applies rebinning to a single Swift-XRT lightcurve.
+
+    If regime is not 'none', the resulting lightcurve will 
+    be binned uniformly in the log-Time scale. The rebinning 
+    algorithm is designed so that the average count rate in 
+    each bin remains unchanged after the rebinning.
+    
+    Parameters
+    ----------
+    dataframe : pandas.DataFrame
+        DataFrame with the raw Swift-XRT lightcurve data.
+    lgTime_min : float, default=1.0
+        Decimal logarithm of the target time bin edges
+        starting point (in seconds). Ignored if `regime`='none'.
+    lgTime_max : float, default=7.0
+        Decimal logarithm of the target time bin edges
+        end point (in seconds). Ignored if `regime`='none'.
+    lgTime_nbins : int, default=64
+        Number of bins (i.e. the number of bin edges - 1).
+        Ignored if `regime`='none'.
+    regime : str, default='padding'
+        There are three available regimes of rebinning:
+        'padding', 'linear_interpolation' and 'none'.
+            - 'padding': the rebinned lightcurve is 
+            padded with a value controlled 
+            by `padding` parameter.
+            - 'linear_interpolation': the missing 
+            values are interpolated linearly based on 
+            the source count rate in the nearest non-empty bins.
+            - 'none': only decimal logarithm is applied
+            to the original timeseries and timestamps without
+            rebinning to a uniform grid.
+    padding : float, default=-3.0
+        Ignored if `regime` is not 'padding'.
+        The value initially assigned to empty bins.
+        Default value is approximately a decimal 
+        logarithm of the typical X-Ray background 
+        count rate. If `subtract_background` is True,
+        then the default padded entries would be
+        mapped to 0.0 after background subtraction.
+    subtract_background : bool, default=True
+        Whether to subtract background. If True,
+        the preprocessed count rate would be in
+        the units of average background count rate,
+        that is, 10^{-3} s^{-1}. Otherwise, the 
+        original units of s^{-1} are preserved.
         
-        data = np.array(dataframe.loc[:, data_col].tolist(),
-                        dtype=np.float32)
-        weight = np.array(dataframe.loc[:, weight_col].tolist(),
-                          dtype=np.float32)
+    Returns
+    -------
+    rebinned : dict
+        rebinned['lgRate'] : np.ndarray
+            The (rebinned) source count rate decimal logarithm.
+        rebinned['weight'] : np.ndarray
+            The estimated inverse squared `lgRate` errors. 
+            For the empty bins, a weight of 0.0 is assigned.
+        rebinned['lgTime'] : np.ndarray
+            The bin centers, in the units of decimal logarithm 
+            of time in seconds if `regime` is not 'none'.
+            Otherwise, decimal logarithm of the original timestamps.
+    """
+    assert regime in [
+        'padding',
+        'linear_interpolation',
+        'none'
+    ], f"Unknown rebinning regime: '{regime}'"
+
+    lgTimeOrig = dataframe['Time'].apply(np.log10).values
+
+    if regime=='none':
+        lgRate = dataframe['Rate'].apply(np.log10).values
+        if subtract_background:
+            lgRate += 3.0
+        lgRateErr = dataframe['RateErr'].values/dataframe['Rate'].values/LOG10
+        weight = 1/lgRateErr**2
+        # if too many data points, return a sparsed version
+        step = len(lgRate) // 1000 + 1
+        rebinned = {
+            'lgRate': lgRate[::step],
+            'weight': weight[::step],
+            'lgTime': lgTimeOrig[::step]
+        }
+        return rebinned
+
+    padding = padding if regime=='padding' else 0.0
+
+    bin_edges = np.linspace(lgTime_min, lgTime_max, lgTime_nbins+1)
+    lgTime = 0.5 * (bin_edges[1:] + bin_edges[:-1]) 
+    lgRate = np.zeros(lgTime_nbins)
+    weight = np.zeros(lgTime_nbins)
+
+    for bin_index in range(lgTime_nbins):
+        mask = (
+            (lgTimeOrig >= bin_edges[bin_index]) * 
+            (lgTimeOrig < bin_edges[bin_index+1])
+        )
+        dataframe_fragment = dataframe.loc[mask, :].copy()
         
-        self.data = torch.from_numpy(
-            data).unsqueeze(dim=1)   # value
-        self.weight = torch.from_numpy(
-            weight).unsqueeze(dim=1) # weight
+        local_grid = np.exp(
+            LOG10 * np.hstack(
+                (
+                    bin_edges[np.newaxis, bin_index],
+                    0.5 * (
+                        lgTimeOrig[mask][1:] + lgTimeOrig[mask][:-1]
+                    ),
+                    bin_edges[np.newaxis, bin_index+1]
+                )
+            )
+        )
+        integral = np.sum(
+                dataframe_fragment['Rate'].values * np.diff(local_grid)
+        ).item()
+        flag = integral > 0.0
+        lgRate[bin_index] = np.log10(
+            integral / np.ptp(local_grid)
+        ) if flag else padding
+        weight[bin_index] = (LOG10 * integral / 
+                             np.sum(
+                                dataframe_fragment['RateErr'].values * 
+                                np.diff(local_grid)
+                             ).item()
+        )**2 if flag else 0.0
 
-        # using dataframe index = event names 
-        # as labels
-        labels = dataframe.index
-        self.label_enc = LabelEncoder()
-        self.labels = torch.as_tensor(self.label_enc.fit_transform(labels))
+    if subtract_background:
+        lgRate += 3.0
+    if regime=='linear_interpolation':
+        mask = (weight > 0.0)
+        lgRate = np.interp(lgTime, lgTime[mask], lgRate[mask])
 
-    def __len__(self):
-        return len(self.data)
-
-    def __getitem__(self, idx):
-        return self.data[idx], self.labels[idx], self.weight[idx]
+    rebinned = {
+        'lgRate': lgRate,
+        'weight': weight,
+        'lgTime': lgTime
+    }
+    return rebinned
 
 def get_SwiftXRTLightCurves(event_names_list:list)->tuple:
     """
@@ -78,10 +224,12 @@ def get_SwiftXRTLightCurves(event_names_list:list)->tuple:
             f'only {len(unique_names)} unique entries will be processed'
             )
 
-    print('[Processing]: Sending request to the Swift-XRT repository...')
-    print('[Processing]: Please be patient, this may be time-consuming')
+    print('[Processing]: Sending request to the Swift-XRT repository...'+
+          '\nPlease be patient, this may be time-consuming')
+
     lcData = dict()
-    for event in unique_names:
+
+    for event in tqdm(unique_names):
         # Here we are trying to avoid a bug in swifttools:
         # the current verison getLightCurves function cannot 
         # easily skip errors caused by unresolved GRBs
@@ -164,6 +312,33 @@ def get_SwiftXRTLightCurves(event_names_list:list)->tuple:
     lightcurves = pd.DataFrame.from_dict(lightcurves, orient='index').sort_index(axis=0)
 
     return (lightcurves, info)
+
+class LightCurveDataset(Dataset):
+    def __init__(self, dataframe:pd.DataFrame,
+                 data_col:str='lgRate',
+                 weight_col:str='weight'):
+        
+        data = np.array(dataframe.loc[:, data_col].tolist(),
+                        dtype=np.float32)
+        weight = np.array(dataframe.loc[:, weight_col].tolist(),
+                          dtype=np.float32)
+        
+        self.data = from_numpy(
+            data).unsqueeze(dim=1)   # value
+        self.weight = from_numpy(
+            weight).unsqueeze(dim=1) # weight
+
+        # using dataframe index = event names 
+        # as labels
+        labels = dataframe.index
+        self.label_enc = LabelEncoder()
+        self.labels = as_tensor(self.label_enc.fit_transform(labels))
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        return self.data[idx], self.labels[idx], self.weight[idx]
 
 def create_Dataloader(lightcurves:pd.DataFrame)->DataLoader:
     """
