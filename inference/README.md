@@ -20,18 +20,18 @@ Assuming that your `<input-file>` includes 100 events in total, of which 25 have
 [Processing]: Rebinning in progress...
 [Processing]: Rebinning finished
 [Processing]: Job complete!
-    complete_lightcurve   : 50 entries
-    incomplete_lightcurve : 25 entries
-    not_found             : 25 entries
+    complete_lightcurve    : 50 entries
+    incomplete_lightcurve  : 25 entries
+    not_found              : 25 entries
 [Loading model]: In progress...
 GPU available: True (mps), used: True
 TPU available: False, using: 0 TPU cores
 HPU available: False, using: 0 HPUs
 [Loading model]: Job complete!
 [Predictions]: In progress...
-Testing DataLoader 0: 100%|██████████████████████| 1/1 [00:00<00:00,  7.37it/s]
+Testing DataLoader 0: 100%|███████████████████████| 1/1 [00:02<00:00,  0.55it/s]
 [Predictions]: Job complete!
-The output table is stored at './scored_samples.csv'
+The full output table is stored at './scored_samples.csv'
 ```
 **Step 3.** Look at [`scored_samples.csv`](scored_samples.csv) (through the link, you can access the output produced for the [`example_input`](example_input) file). The columns are: 
 - **info**: the message generated while processing the event
