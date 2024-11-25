@@ -86,7 +86,7 @@ def get_SwiftXRTLightCurves(event_names_list:list)->tuple:
         # the current verison getLightCurves function cannot 
         # easily skip errors caused by unresolved GRBs
 
-        targetID = GRBNameToTargetID(event, silent=False)
+        targetID = GRBNameToTargetID(event, silent=True)
         if targetID is not None:
             lc = getLightCurves(
                 targetID=targetID,
