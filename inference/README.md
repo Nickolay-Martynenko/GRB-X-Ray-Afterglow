@@ -13,7 +13,7 @@ Note that for technical reasons, the *Swift*-XRT repository may sometimes be una
 
 Please look at an example input file [`example_input`](example_input) (a number of non-existing and non-GRB events are intentionally added for illustration).
 
-**Step 2.** Once the `<input-file>` is prepared and the requirements are installed, you can run `score_samples` script. To see instructions:
+**Step 2.** Once the requirements are installed and the `<input-file>` is prepared, you can run `score_samples` script. To see instructions:
 ```
 (GRB_env) $ python ./utilities/score_samples.py -h
 ```
@@ -21,6 +21,10 @@ To use a default configuration (that is, to load the recommended model directly 
 ```
 (GRB_env) $ python ./utilities/score_samples.py <input-file>
 ```
+You can set the name of the output csv file via `-o` option.
+
+Instead of using default configuration, it is possible to use non-default architectures available in [`/models/AutoEncoder/Architectures`](/models/AutoEncoder/Architectures). You can also load your own custom pre-trained AutoEncoder model checkpoint file `best.ckpt` together with a scoring function[^1] `scoring.joblib` from a local directory.
+
 Assuming that your `<input-file>` includes 100 events in total, of which 20 have invalid names and another 30 have incomplete lightcurves, the output would be:
 ```
 [Processing]: Sending request to the Swift-XRT repository...
@@ -50,3 +54,5 @@ The output table is saved in the './output.csv' file
   - `missing_data` : the passed event name is valid, but neither PC_incbad nor WT_incbad dataset is available for this event, so nothing to process
   - `not_found` : the passed event name not found in the *Swift*-XRT repository (due to either invalid name or a connection timeout issue)
 - **p-value**: for complete lightcurves, the estimated $p$-value; otherwise, empty cell
+
+[^1]: Scoring function maps the decimal logarithm of a weighted mean squared reconstruction error to the natural logarithm of $p$-value
