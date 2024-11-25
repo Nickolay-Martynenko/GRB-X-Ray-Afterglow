@@ -2,7 +2,9 @@
 **Step 0.**
 Before you start working with the scripts, please read the <a href="/README.md/#setup"> [setup instructions]</a> and install the requirements listed in [`requirements.txt`](requirements.txt)
 
-**Step 1.** Prepare `<input-file`. It should be GRB names you want to score, listed line-by-line. If some names do not correspond to any GRB in the *Swift*-XRT lightcurves repository, they will not be further processed. If some names are listed more than once, they will be processed only once. If some of the found lightcurves are incomplete (that is, include less than 4 data points or span less than 8 bins on the rebinned grid), they also will not be further processed.
+**Step 1.** Prepare your `<input-file>`. It should be GRB names you want to score, listed line-by-line. 
+
+If some names do not correspond to any GRB in the *Swift*-XRT lightcurves repository, they will not be further processed. If some names are listed more than once, they will be processed only once. If some of the found lightcurves are incomplete (that is, include less than 4 data points or span less than 8 bins on the rebinned grid), they also will not be further processed.
 
 Please look at an example input file [`example_input`](example_input) (non-existing and non-GRB events are intentionally added for illustration).
 
