@@ -276,6 +276,7 @@ def rebin(dataframe:pd.DataFrame,
             of time in seconds if `regime` is not 'none'.
             Otherwise, decimal logarithm of the original timestamps.
     """
+    
     assert regime in [
         'padding',
         'linear_interpolation',
