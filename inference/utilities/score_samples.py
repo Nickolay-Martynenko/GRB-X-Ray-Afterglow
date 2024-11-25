@@ -1,4 +1,5 @@
 import argparse
+import inspect
 import os
 import shutil
 import pandas as pd
@@ -6,8 +7,9 @@ import numpy as np
 
 from torch import no_grad
 from lightning import Trainer
-from dataset import get_SwiftXRTLightCurves, create_Dataloader
+from dataset import rebin, get_SwiftXRTLightCurves, create_Dataloader
 from model import load_model_scoring
+from plots import plot_lightcurves
 
 from warnings import simplefilter, filterwarnings
 simplefilter("ignore", category=RuntimeWarning)
@@ -20,6 +22,10 @@ parser.add_argument("filename", type=str,
 parser.add_argument("-o", "--output_file", type=str,
     help="the name of the <output-file> ('.csv' extension will be appended)",
     default="output"
+)
+parser.add_argument("-p", "--plot_lightcurves", type=bool,
+    help="whether to plot the real and reconstructed lightcurves",
+    default=False
 )
 parser.add_argument("-s", "--source", type=str,
     default="from_repo",
@@ -79,6 +85,26 @@ weightedMSE = np.ma.masked_array(
     data=weightedMSE, mask=~(weight.astype(bool))
 ).mean(axis=1)
 p_value = np.exp(scoring(np.log10(weightedMSE)))
+
+# plot lightcurves
+if args.plot_lightcurves:
+
+    # get the rebinning procedure info 
+    signature = inspect.signature(rebin)
+    bin_edges = np.linspace(
+        signature.parameters['lgTime_min'].default,
+        signature.parameters['lgTime_max'].default,
+        signature.parameters['lgTime_nbins'].default+1)
+    time_grid = (bin_edges[1:] + bin_edges[:-1])/2
+    offset = (
+        +3.0 if signature.parameters['subtract_background'].default 
+        else 0.0
+    )
+
+    # plot
+    if not os.path.isdir('./Figures'):
+        os.mkdir('./Figures')
+    plot_lightcurves(labels, real, recon, weight, time_grid, offset)
 
 # save predictions
 info['p-value'] = np.nan
