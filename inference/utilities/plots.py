@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib
+matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 plt.rcParams['font.family']='monospace'
@@ -9,26 +11,28 @@ def plot_lightcurves(
     time_grid:np.ndarray, offset:float):
 
     for label, true, reco, w in zip(labels, real, recon, weight):
-        plt.xlim(1, 8)
-        plt.ylim(1-offset, 7-offset)
-        plt.grid(True)
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
 
-        plt.xlabel(r'$\log_{10}$[Time / s]', fontsize=15)
-        plt.ylabel(r'$\log_{10}$[Source rate / s$^{-1}$]', fontsize=15)
-        plt.title(label)
+        ax.set_xlim(1, 8)
+        ax.set_ylim(1-offset, 7-offset)
+        ax.grid(True)
+
+        ax.set_xlabel(r'$\log_{10}$[Time / s]', fontsize=15)
+        ax.set_ylabel(r'$\log_{10}$[Source rate / s$^{-1}$]', fontsize=15)
+        ax.set_title(label)
 
         mask = w.astype(bool)
-        start, stop = np.where(mask)[[0, -1]]
+        start, stop = np.argwhere(mask).ravel()[[0, -1]]
 
-        plt.errorbar(
+        ax.errorbar(
             time_grid[mask]-offset, true[mask]-offset, w[mask]**(-1/2),
             fmt='s', markersize=8, capsize=4, color='black', label='true'
         )
-        plt.plot(
+        ax.plot(
             time_grid[start:stop+1]-offset, reco[start:stop+1]-offset,
             linewidth=2, color='dimgray', label='reco'
         )
-        plt.legend(loc='upper right', fontsize=15)
+        ax.legend(loc='upper right', fontsize=15)
 
-        plt.savefig(f'./Figures/{label}.pdf', format='pdf', bbox_inches='tight')
-        plt.close()
+        fig.savefig(f'./Figures/{label}.pdf', format='pdf', bbox_inches='tight')
