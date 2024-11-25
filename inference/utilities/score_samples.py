@@ -49,8 +49,7 @@ info.loc[labels, 'p-value'] = p_value
 info.to_csv('scored_samples.csv')
 
 print(f'[Predictions]: Job complete!')
-print(info.head())
-print("\nThe full output table is available in './scored_samples.csv'")
+print("The full output table is stored at './scored_samples.csv'")
 
 shutil.rmtree(f"{os.path.dirname(__file__)}/__pycache__")
 shutil.rmtree(f"{os.path.dirname(__file__)}/../../dataset/utilities/__pycache__")
