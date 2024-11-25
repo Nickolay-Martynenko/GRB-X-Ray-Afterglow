@@ -42,16 +42,19 @@ $ conda create -n GRB_env python==3.11.5 -y
 $ conda activate GRB_env
 ```
 **Step 3.** From the current directory (where you read this guide), switch to the folder `<directory>`:
+- [`inference`](inference) — to work with a pre-trained anomaly detector based on AutoEncoder model,
 - [`dataset`](dataset) — to create/preprocess dataset,
 - [`models`](models) — to work with Machine Learning models,
-- [`models/AutoEncoder`](models/AutoEncoder) — to work with AutoEncoder model.
+- [`models/AutoEncoder`](models/AutoEncoder) — to work with AutoEncoder model,
+
    
-It is highly recommended to have an individual environment for each of these options. Then install the required packages and Jupyter Notebook 6.4.13 (the latter is optional if  `<directory>` is  `dataset`)
+It is highly recommended to have an individual environment for each of these options. Then install the required packages and Jupyter Notebook 6.4.13 (the latter is optional if  `<directory>` is `inference` or `dataset`)
 ```
 (GRB_env) $ cd ./<directory>
 (GRB_env) $ python -m pip install -r requirements.txt [notebook==6.4.13]
 ```
 You can now work with:
+- [`inference/utilities`](inference/utilities) python scripts,
 - [`dataset/utilities`](dataset/utilities) python scripts,
 - [`DBSCAN.ipynb`](models/DBSCAN/DBSCAN.ipynb), [`IsolationForest.ipynb`](models/IsolationForest/IsolationForest.ipynb), and [`KernelPCA.ipynb`](models/KernelPCA/KernelPCA.ipynb) notebooks,
 - [`AutoEncoder.ipynb`](models/AutoEncoder/AutoEncoder.ipynb) notebook,
