@@ -6,6 +6,8 @@ from tqdm import tqdm
 from sklearn.preprocessing import LabelEncoder
 from swifttools.ukssdc.data.GRB import GRBNameToTargetID, getLightCurves
 
+LOG10 = 2.302585092994046
+
 def complete_lightcurve(dataframe:pd.DataFrame,
     min_timestamps:int=4, bins:tuple=(1, 7, 64),
     min_bins:int=8)->bool:

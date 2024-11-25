@@ -8,8 +8,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import lightning as L
 
-from lightning import Trainer
-
 PARENT_DIR_URL = (
     'https://raw.githubusercontent.com/'+
     'Nickolay-Martynenko/GRB-X-Ray-Afterglow/'+
@@ -205,71 +203,58 @@ class LitAE(L.LightningModule):
         # for every item in test_result dictionary
         for key in self.test_result:
             self.test_result[key] = self.test_result[key].numpy()
-'''
-def create_model(latent_dim:int=3, architecture:tuple=(32, 4)):
+
+def create_encoder_decoder(
+    latent_dim:int=3,
+    architecture:tuple=(32, 4)
+    )->dict:
     """
-    Creates autoencoder model instance
+    Creates encoder and decoder instances
     """
     encoder, decoder = (
         Encoder(latent_dim=latent_dim, architecture=architecture),
         Decoder(latent_dim=latent_dim, architecture=architecture)
     )
-    autoencoder = LitAE(encoder, decoder)
-    return encoder, decoder, autoencoder
-'''
+    return {'encoder': encoder, 'decoder': decoder}
 
-def load_model(
+
+def load_model_scoring(
     latent_dim=3, architecture=(32, 4),
-    save_downloaded_checkpoint=False,
+    save_downloaded_files=False,
     use_local_path:bool=False,
-    local_path:str='./best.ckpt'):
+    local_path:str='.'):
     """
-    Loads model from checkpoint. By default, 
+    Loads model from 'best.ckpt' checkpoint. By default, 
     checkpoint from GitHub is used. However user
     can load local checkpoint passing the 
     corresponding optional arguments.
     """
-    if not use_local_path:
+
+    if use_local_path:
+        LitAE.load_from_checkpoint(
+            f'{local_path}/best.ckpt',
+            **create_encoder_decoder(latent_dim, architecture)
+        )
+        scoring = joblib.load(f'{local_path}/scoring.joblib')
+
+    else:
         exp_name = f'AE_dim={latent_dim}_archi=' + '%d_%d' % architecture
         url = PARENT_DIR_URL+f'/{exp_name}/best.ckpt'
-        subprocess.run(['curl', '-o', './best_checkpoint_loaded_from_GitHub.ckpt', '-s',
+        subprocess.run(['curl', '-o', './_from_GitHub_best.ckpt', '-s',
                     '--show-error', f'{url}'])
         model = LitAE.load_from_checkpoint(
-            './best_checkpoint_loaded_from_GitHub.ckpt',
-            encoder=Encoder(latent_dim=latent_dim, architecture=architecture),
-            decoder=Decoder(latent_dim=latent_dim, architecture=architecture)
+            './_from_GitHub_best.ckpt',
+            **create_encoder_decoder(latent_dim, architecture)
         )
-
-        if not save_downloaded_checkpoint:
-            os.remove('./best_checkpoint_loaded_from_GitHub.ckpt')
-    else:
-        LitAE.load_from_checkpoint(
-            local_path,
-            encoder=Encoder(latent_dim=latent_dim, architecture=architecture),
-            decoder=Decoder(latent_dim=latent_dim, architecture=architecture)
-        )
-        
-    return model, Trainer(logger=False)
-
-def load_scoring(
-    latent_dim=3, architecture=(32, 4),
-    save_downloaded_scoring=False,
-    use_local_path:bool=False,
-    local_path:str='./scoring.joblib'):
-    
-    if not use_local_path:
-        exp_name = f'AE_dim={latent_dim}_archi=' + '%d_%d' % architecture
-        url = PARENT_DIR_URL+f'/{exp_name}/scoring.joblib'
-        subprocess.run(['curl', '-o', './scoring_loaded_from_GitHub.joblib', '-s',
+        subprocess.run(['curl', '-o', './_from_GitHub_scoring.joblib', '-s',
                     '--show-error', f'{url}'])
-        scoring = joblib.load('./scoring_loaded_from_GitHub.joblib')
+        scoring = joblib.load('./_from_GitHub_scoring.joblib')
 
-        if not save_downloaded_scoring:
-            os.remove('./scoring_loaded_from_GitHub.joblib')
-    else:
-        scoring = joblib.load(local_path)
+        if not save_downloaded_files:
+            os.remove('./_from_GitHub_best.ckpt')
+            os.remove('./_from_GitHub_scoring.joblib')
 
-    return scoring
+    return model, scoring
     
 
 
