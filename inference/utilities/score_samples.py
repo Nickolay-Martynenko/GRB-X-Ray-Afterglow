@@ -1,17 +1,16 @@
 import fileinput
 import os
 import shutil
-
 import pandas as pd
 import numpy as np
 from torch import no_grad
 
+from dataset import get_SwiftXRTLightCurves, create_Dataloader
+from model import load_model, load_scoring
+
 from warnings import simplefilter, filterwarnings
 simplefilter("ignore", category=RuntimeWarning)
 filterwarnings("ignore", ".*does not have many workers.*")
-
-from dataset import get_SwiftXRTLightCurves, create_Dataloader
-from model import load_model, load_scoring
 
 event_names = []
 for line in fileinput.input(encoding='utf-8'):
@@ -52,5 +51,4 @@ print(f'[Predictions]: Job complete!')
 print("The full output table is stored at './scored_samples.csv'")
 
 shutil.rmtree(f"{os.path.dirname(__file__)}/__pycache__")
-shutil.rmtree(f"{os.path.dirname(__file__)}/../../dataset/utilities/__pycache__")
 
