@@ -26,11 +26,11 @@ def plot_lightcurves(
         start, stop = np.argwhere(mask).ravel()[[0, -1]]
 
         ax.errorbar(
-            time_grid[mask]-offset, true[mask]-offset, w[mask]**(-1/2),
+            time_grid[mask], true[mask]-offset, w[mask]**(-1/2),
             fmt='s', markersize=8, capsize=4, color='black', label='true'
         )
         ax.plot(
-            time_grid[start:stop+1]-offset, reco[start:stop+1]-offset,
+            time_grid[start:stop+1], reco[start:stop+1]-offset,
             linewidth=2, color='dimgray', label='reco'
         )
         ax.legend(loc='upper right', fontsize=15)
