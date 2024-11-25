@@ -31,4 +31,7 @@ Testing DataLoader 0: 100%|█████████████████�
 [Predictions]: Job complete!
 The output table is available at './scored_samples.csv'
 ```
-**Step 3.** Look at `./scored_samples.csv`: in this 
+**Step 3.** Look at [`scored_samples.csv`](scored_samples.csv) (through the link, you can access the output produced for the [`example_input`](example_input) file). The columns are: 
+
+- **info**: the message generated while processing the event
+      - 
