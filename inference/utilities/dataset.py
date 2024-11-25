@@ -159,7 +159,7 @@ def get_SwiftXRTLightCurves(event_names_list:list)->tuple:
         columns=['info']).sort_index(axis=0)
     print(f'[Processing]: Job complete!')
     for key, val in info['info'].value_counts().to_dict().items():
-        key = key.ljust(20)
+        key = key.ljust(22)
         print(f'    {key} : {val} entries')
     lightcurves = pd.DataFrame.from_dict(lightcurves, orient='index').sort_index(axis=0)
 
