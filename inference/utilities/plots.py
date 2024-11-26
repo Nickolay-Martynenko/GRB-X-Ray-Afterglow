@@ -15,7 +15,7 @@ def plot_lightcurves(
         ax = fig.add_subplot(111)
 
         ax.set_xlim(1, 8)
-        ax.set_ylim(1-offset, 7-offset)
+        ax.set_ylim(-1-offset, 7-offset)
         ax.grid(True)
 
         ax.set_xlabel(r'$\log_{10}$[Time / s]', fontsize=15)
@@ -27,7 +27,7 @@ def plot_lightcurves(
 
         ax.errorbar(
             time_grid[mask], true[mask]-offset, w[mask]**(-1/2),
-            fmt='s', markersize=8, capsize=4, color='black', label='true'
+            fmt='s', markersize=4, capsize=4, color='black', label='true'
         )
         ax.plot(
             time_grid[start:stop+1], reco[start:stop+1]-offset,
