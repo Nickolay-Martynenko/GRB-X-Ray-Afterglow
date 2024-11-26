@@ -15,8 +15,9 @@ Feature extraction + Scoring | None + IsolationForest | KernelPCA + KDE | Isomap
 **ROC AUC/bins** | - | - | - | 0.69[^1] |
 **CoD/test** | - | 0.20 | 0.35 | 0.45 |
 
-
 Finally, we manually analyse top anomalous-scored samples, and try to argue what physical, morphological, or instrumental lightcurve features did the model look at, if possible.
+
+We conclude that the AutoEncoder-based model is best-suitable for anomaly detection.
 
 # Usage
 To make it easier to reporduce all the experiments without thinking of data loading and data preprocessing (e.g. in Google Colab), the data sets are downloaded directly from the online version of this repository using [[curl]](https://curl.se). If one prefers to use local paths instead of URLs, it can be achieved manually (see [`dataset`](/dataset) directory in this repository).
