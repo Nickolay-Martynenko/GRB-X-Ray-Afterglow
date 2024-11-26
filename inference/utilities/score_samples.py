@@ -23,9 +23,8 @@ parser.add_argument("-o", "--output_file", type=str,
     help="the name of the <output-file> ('.csv' extension will be appended)",
     default="output"
 )
-parser.add_argument("-p", "--plot_lightcurves", type=bool,
-    help="whether to plot the real and reconstructed lightcurves",
-    default=False
+parser.add_argument("--plot_lightcurves",  action=argparse.BooleanOptionalAction,
+    help="whether to plot the real and reconstructed lightcurves"
 )
 parser.add_argument("-s", "--source", type=str,
     default="from_repo",

@@ -21,7 +21,7 @@ To use a default configuration (that is, to load the recommended model directly 
 ```
 (GRB_env) $ python ./utilities/score_samples.py <input-file>
 ```
-You can set the name of the output csv file via `-o` option.
+You can set the name of the output csv file via `-o` option. To plot the real and reconstructed lightcurves, pass `--plot_lightcurves` option.
 
 Instead of using default configuration, it is possible to use non-default architectures available in [`/models/AutoEncoder/Architectures`](/models/AutoEncoder/Architectures). You can also load your own custom pre-trained AutoEncoder model checkpoint file `best.ckpt` together with a scoring function[^1] `scoring.joblib` from a local directory.
 
