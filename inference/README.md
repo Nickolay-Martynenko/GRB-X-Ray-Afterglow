@@ -1,5 +1,5 @@
 # AutoEncoder-based GRB X-Ray Afterglow Anomalous Light Curves Detector
-<img src="/figures/grbpipeline.png" width=800 height=600/>
+<img src="/figures/grbpipeline.png" width=800/>
 
 A brief description of the GRB events processing algorithm:
 1. The script reads an input file with the list of GRBs to be scored.
