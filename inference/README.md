@@ -7,7 +7,7 @@ A brief description of the GRB events processing algorithm:
 3. Incomplete entries filtering, rebinning and linear interpolation is applied to the downloaded lightcurves
 4. The preprocessed dataset is sent to a pre-trained AutoEncoder model, which is either downloaded from the online version of this repository or stored locally
 5. For each lightcurve, the reconstruction error is calculated. Based on the known reconstruction error distribution on the training set that is loaded together with the pre-trained model, reconstruction error $p$-values are estimated
-6. The calculated $p$-values together with preprocessing procedure output code are saved in the output csv file
+6. The calculated $p$-values together with preprocessing procedure output code are saved in the csv file
 
 # Usage
 **Step 0.**
@@ -23,6 +23,8 @@ If some of the passed events:
 Note that for technical reasons, the *Swift*-XRT repository may sometimes be unavailable, even if your internet connection is stable. Whenever `ConnectTimeout` exception arises while requesting event, a corresponding warning will be shown. The time-outed request also will not be further processed.
 
 Please look at an example input file [`example_input`](example_input) (a number of non-existing and non-GRB events are intentionally added for illustration).
+
+**WARNING:** In the current version, <ins>at least 2 unique complete lightcurves</ins> must be found in the *Swift*-XRT repository for the script to work properly! Otherwise, unexpected behavior occurs when calculating reconstruction errors.
 
 **Step 2.** Once the requirements are installed and the `<input-file>` is prepared, you can run `score_samples` script. To see instructions:
 ```
