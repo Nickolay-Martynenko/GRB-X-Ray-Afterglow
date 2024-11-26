@@ -58,7 +58,7 @@ It is highly recommended to have an individual environment for each of these opt
 (GRB_env) $ cd ./<directory>
 (GRB_env) $ python -m pip install -r requirements.txt [notebook==6.4.13]
 ```
-Additionally, please **ensure that cURL is installed on your device**. This is **required** for working with [`inference`](inference) and [`models`](models), since the pre-trained weights/prepared datasets, respectively, are by default downloaded from the online version of this repository.
+Additionally, please ensure that [[cURL]](https://curl.se) is installed on your device. This is required for working with [`inference`](inference) and [`models`](models), since the pre-trained weights/prepared datasets, respectively, are by default downloaded from the online version of this repository.
 
 You can now work with:
 - [`inference/utilities`](inference/utilities) python scripts,
