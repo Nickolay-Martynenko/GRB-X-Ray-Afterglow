@@ -16,6 +16,8 @@ The main product presented by this project is a pre-trained **AutoEncoder-based 
 
 [`inference/README.md`](inference/README.md) presents a complete User's Guide for this detector.
 
+<img src="figures/grbpipeline.png" width=600 height=450/>
+
 ## Dataset
 This study utilizes the *Swift*-XRT GRB lightcurve [[repository]](https://www.swift.ac.uk/xrt_curves/) data. The dataset is briefly described in [`dataset/README.md`](dataset/README.md)
 
