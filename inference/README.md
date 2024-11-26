@@ -6,7 +6,7 @@ A brief description of the GRB events processing algorithm:
 2. The corresponding query is created and sent to the *Swift*-XRT online repository, and the available lightcurves are downloaded
 3. Incomplete entries filtering, rebinning and linear interpolation is applied to the downloaded lightcurves
 4. The preprocessed dataset is sent to a pre-trained AutoEncoder model, which is either downloaded from the online version of this repository or stored locally
-5. For each lightcurve, the reconstruction error is calculated. Based on the known reconstruction error distribution on the training set that is loaded together with the pre-trained model, $p$-value is estimated
+5. For each lightcurve, the reconstruction error is calculated. Based on the known reconstruction error distribution on the training set that is loaded together with the pre-trained model, reconstruction error $p$-values are estimated
 6. The calculated $p$-values together with preprocessing procedure output code are saved in the output csv file
 
 # Usage
