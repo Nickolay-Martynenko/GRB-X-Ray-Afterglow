@@ -14,7 +14,7 @@ We demonstrate that AutoEncoder is a promising model satisfying these criteria.
 ## Inference
 <img src="figures/grbpipeline.png" width=600 height=450/>
 
-The main product presented by this project is a pre-trained **AutoEncoder-based anomalous GRB detector** employing `swifttools` API. The detector works in a user-friendly “black-box” manner, without *requiring* the user to understand what is going on in detail, but still being flexible enough for those who wants to manage the parameters.
+The main product presented by this project is a pre-trained **AutoEncoder-based GRB X-Ray Afterglow Anomalous Light Curves Detector** employing `swifttools` API. The detector works in a user-friendly “black-box” manner, without *requiring* the user to understand what is going on in detail, but still being flexible enough for those who wants to manage the parameters.
 
 [`inference/README.md`](inference/README.md) presents a complete User's Guide for this detector.
 
