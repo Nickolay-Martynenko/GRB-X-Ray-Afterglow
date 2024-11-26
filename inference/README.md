@@ -1,3 +1,5 @@
+# Anomalous GRB Detector
+
 # Usage
 **Step 0.**
 Before you start working with the scripts, please read the <a href="/README.md/#setup"> [setup instructions]</a> and install the requirements listed in [`requirements.txt`](requirements.txt)
@@ -21,7 +23,7 @@ To use a default configuration (that is, to load the recommended model directly 
 ```
 (GRB_env) $ python ./utilities/score_samples.py <input-file>
 ```
-You can set the name of the output csv file via `-o` option. To plot the real and reconstructed lightcurves, pass `--plot_lightcurves` option.
+You can set the name of the output csv file via `-o` option. To plot the real (rebinned) data points and reconstructed lightcurve for all processed events, pass `--plot_lightcurves` option.
 
 Instead of using default configuration, it is possible to use non-default architectures available in [`/models/AutoEncoder/Architectures`](/models/AutoEncoder/Architectures). You can also load your own custom pre-trained AutoEncoder model checkpoint file `best.ckpt` together with a scoring function[^1] `scoring.joblib` from a local directory.
 
@@ -54,5 +56,7 @@ The output table is saved in the './output.csv' file
   - `missing_data` : the passed event name is valid, but neither PC_incbad nor WT_incbad dataset is available for this event, so nothing to process
   - `not_found` : the passed event name not found in the *Swift*-XRT repository (due to either invalid name or a connection timeout issue)
 - **p-value**: for complete lightcurves, the estimated $p$-value; otherwise, empty cell
+
+If `--plot_lightcurves` option was passed, then the resulting figures are saved in the [`./Figures`](./Figures) directory.
 
 [^1]: Scoring function maps the decimal logarithm of a weighted mean squared reconstruction error to the natural logarithm of $p$-value
