@@ -12,7 +12,7 @@ In a few words, we are looking for such model that:
 We demonstrate that AutoEncoder is a promising model satisfying these criteria.
 
 ## Inference
-The main product presented by this project is a pre-trained AutoEncoder-based GRB anomaly detector employing `swifttools` API. The detector works in a user-friendly “black-box” manner, without *requiring* the user to understand what is going on, but still being flexible enough for those who wants to manage the parameters.
+The main product presented by this project is a pre-trained AutoEncoder-based anomalous GRB detector employing `swifttools` API. The detector works in a user-friendly “black-box” manner, without *requiring* the user to understand what is going on, but still being flexible enough for those who wants to manage the parameters.
 
 [`inference/README.md`](inference/README.md) presents a complete User's Guide for this detector.
 
