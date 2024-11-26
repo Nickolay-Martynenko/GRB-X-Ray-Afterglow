@@ -4,7 +4,7 @@ We compare the AutoEncoder model with topological-based (DBSCAN, KernelPCA) and 
 # Metrics
 To compare between the models, we score samples and measure a connection between the scores and the presence of flares in the lightcurve using ROC AUC score. Although the latter is not exactly what one must call an *anomaly*, such a metric is a robust and well-defined  measure of how well the model captures real physical properties of the lightcurve morphology. 
 
-Additionally, we look for a linear relationship between the extracted features and number of breaks in the lightcurve trend estimated by *Swift*-XRT analysis. 
+Additionally, we look for a linear relationship between the extracted features and number of breaks in the lightcurve trend estimated by *Swift*-XRT analysis, fitting a simple linear regression to the extracted features – number-of-breaks relation and calculating the coefficient of determination (CoD). 
 
 A summary of these experiments is given in the table below.
 
