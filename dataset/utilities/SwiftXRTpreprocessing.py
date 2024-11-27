@@ -1205,15 +1205,14 @@ def make_dataset(SwiftXRTdict:dict,
         preprocesser_kwargs = {}
     print('[Creating Dataset]: All available data collection modes')
     for event_name, datadict in tqdm(SwiftXRTdict.items()):
+        
         dataframe = datadict['data']
-        if (
-            'masked_flares' in preprocesser_kwargs.keys()
-            ):
 
+        if preprocesser_kwargs.get('masked_flares', False):
             preprocesser_kwargs.update(
-                'flares_list': datadict.get('Flares', [])
+                {'flares_list': datadict.get('Flares', [])}
             )
-            
+
         if criterion(dataframe):
             year = get_year(event_name)
             preprocessed = preprocesser(dataframe, **preprocesser_kwargs)

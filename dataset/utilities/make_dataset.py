@@ -24,15 +24,20 @@ parser.add_argument("-r", "--regime", type=str,
 parser.add_argument("--metadata", type=str,
 					help="csv metadata file name", default=None
 )
+parser.add_argument("--masked_flares", action=argparse.BooleanOptionalAction,
+					help="whether to mask flares")
 
 args = parser.parse_args()
-kwargs = dict()
+kwargs = {"preprocesser_kwargs": dict()}
 
 if args.preprocesser:
 	preprocesser = getattr(SwiftXRTpreprocessing, args.preprocesser)
 	kwargs.update({"preprocesser": preprocesser})
 	if args.preprocesser == "rebin":
-		kwargs.update({"preprocesser_kwargs": {"regime": args.regime}})
+		kwargs["preprocesser_kwargs"].update({"regime": args.regime})
+	if args.masked_flares:
+		kwargs["preprocesser_kwargs"].update({"masked_flares": True})
+		
 print("") # print blank line to make output look nice
 
 SwiftXRTdict = read_SwiftXRT(args.source_directory, metadata_file=args.metadata)
