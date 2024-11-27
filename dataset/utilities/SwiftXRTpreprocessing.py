@@ -25,7 +25,7 @@ def read_SwiftXRT(directory:str,
     directory : str
         Path to the target directory containing
         the raw Swift-XRT dataset.
-    modes : list, defatul=['PC_incbad', 'WT_incbad']
+    modes : list, default=['PC_incbad', 'WT_incbad']
         Modes of data collection to be included
         in the output dataset. 
     only_basic_lightcurve : bool, default=True
