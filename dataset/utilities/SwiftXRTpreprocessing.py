@@ -326,7 +326,7 @@ def rebin(dataframe:pd.DataFrame,
             'weight': weight[::step],
             'lgTime': lgTimeOrig[::step]
         }
-        
+
         if masked_flares:
             rebinned.update({'flares': flares[::step]})
 
@@ -382,6 +382,15 @@ def rebin(dataframe:pd.DataFrame,
         'weight': weight,
         'lgTime': lgTime
     }
+
+    if masked_flares:
+            flares = np.full_like(lgTime, fill_value=False)
+            for (start, stop) in flares_list:
+                flares += (
+                    (start <= 10**lgTime) * (10**lgTime <= stop)
+                ).astype(bool)
+            rebinned.update({'flares': flares})
+
     return rebinned
 
 class FeatureExtractor:
