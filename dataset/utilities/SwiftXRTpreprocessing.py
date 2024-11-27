@@ -11,7 +11,7 @@ LOG10 = 2.302585092994046
 PATTERN = r'GRB [0-9]{2}[0-1]{1}[0-9]{1}[0-3]{1}[0-9]{1}[A-Z]?'
 
 def read_SwiftXRT(directory:str,
-                  modes:list=['PC_incbad', 'WT_incbad'],
+                  modes:list=['PC_incbad', 'WT_incbad'], metadata_file:str=None,
                   only_basic_lightcurve:bool=True,
                   symmetric_errors:bool=True,
                   only_GRB:bool=True)->dict:
@@ -28,6 +28,8 @@ def read_SwiftXRT(directory:str,
     modes : list, default=['PC_incbad', 'WT_incbad']
         Modes of data collection to be included
         in the output dataset. 
+    metadata_file : str, default=None
+        File to read metadata from (only csv format is supported).
     only_basic_lightcurve : bool, default=True
         If True, only basic lightcurve info will
         be read (i.e. Time, TimePos, TimeNeg,
@@ -107,10 +109,10 @@ def read_SwiftXRT(directory:str,
                             dataframe.insert(3, 'RateErr', RateErr)
                     counter += 1
                     if event_name not in events.keys():
-                        events[event_name] = dataframe
+                        events[event_name] = {'data': dataframe}
                     else:
-                        events[event_name] = pd.concat(
-                            [events[event_name], dataframe],
+                        events[event_name]['data'] = pd.concat(
+                            [events[event_name]['data'], dataframe],
                             axis=0, ignore_index=True
                         ).sort_values(by='Time')
             else:
@@ -123,6 +125,16 @@ def read_SwiftXRT(directory:str,
             f'Found {len(events)} unique events' +
             f' (only confirmed GRB).' if only_GRB else f'.'
         )
+        if os.path.isfile(f'{directory}/{metadata_file}'):
+            metadata = pd.read_csv(
+                f'{directory}/{metadata_file}',
+                index_col=0
+            )
+            for event in events.keys():
+                if event in metadata.index:
+                    events[event].update(
+                        metadata.loc[event, :].to_dict()
+                    )
         return events
     else:
         raise FileNotFoundError(
@@ -212,7 +224,8 @@ def rebin(dataframe:pd.DataFrame,
           lgTime_min:float=1.0, lgTime_max:float=7.0,
           lgTime_nbins:int=64,
           regime:str='padding', padding:float=-3.0,
-          subtract_background:bool=True
+          subtract_background:bool=True,
+          masked_flares:bool=False, flares_list:list=[],
     )->dict:
     """
     Applies rebinning to a single Swift-XRT lightcurve.
@@ -261,6 +274,11 @@ def rebin(dataframe:pd.DataFrame,
         the units of average background count rate,
         that is, 10^{-3} s^{-1}. Otherwise, the 
         original units of s^{-1} are preserved.
+    masked_flares : bool, deafult=False
+        Indicates whether to mask X-Ray flares.
+    flares_list : list, default=[]
+        List of tuples indicating start and end timestamps
+        of X-ray flares. Ignored if masked_flares is False.
         
     Returns
     -------
@@ -274,6 +292,9 @@ def rebin(dataframe:pd.DataFrame,
             The bin centers, in the units of decimal logarithm 
             of time in seconds if `regime` is not 'none'.
             Otherwise, decimal logarithm of the original timestamps.
+        rebinned['flares'] : np.ndarray
+            Flags indicating flares in the X-ray lightcurve timeseries.
+            Only returned if masked_flares is True.
     """
 
     assert regime in [
@@ -290,6 +311,14 @@ def rebin(dataframe:pd.DataFrame,
             lgRate += 3.0
         lgRateErr = dataframe['RateErr'].values/dataframe['Rate'].values/LOG10
         weight = 1/lgRateErr**2
+
+        if masked_flares:
+            flares = np.full_like(lgTimeOrig, fill_value=False)
+            for (start, stop) in flares_list:
+                flares += (
+                    (start <= 10**lgTimeOrig) * (10**lgTimeOrig <= stop)
+                ).astype(bool)
+
         # if too many data points, return a sparsed version
         step = len(lgRate) // 1000 + 1
         rebinned = {
@@ -297,6 +326,10 @@ def rebin(dataframe:pd.DataFrame,
             'weight': weight[::step],
             'lgTime': lgTimeOrig[::step]
         }
+        
+        if masked_flares:
+            rebinned.update({'flares': flares[::step]})
+
         return rebinned
 
     padding = padding if regime=='padding' else 0.0
@@ -1161,7 +1194,8 @@ def make_dataset(SwiftXRTdict:dict,
     if preprocesser_kwargs is None:
         preprocesser_kwargs = {}
     print('[Creating Dataset]: All available data collection modes')
-    for event_name, dataframe in tqdm(SwiftXRTdict.items()):
+    for event_name, datadict in tqdm(SwiftXRTdict.items()):
+        dataframe = datadict['data']
         if criterion(dataframe):
             year = get_year(event_name)
             preprocessed = preprocesser(dataframe, **preprocesser_kwargs)

@@ -8,6 +8,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--source_directory", type=str,
 					help="the directory to read data from"
 )
+parser.add_argument("--metadata", type=str,
+					help="csv metadata file name", default=None
+)
 parser.add_argument("-n", "--name", type=str,
 					help="the name of output .csv files"
 )
@@ -24,6 +27,7 @@ parser.add_argument("-r", "--regime", type=str,
 
 args = parser.parse_args()
 kwargs = dict()
+
 if args.preprocesser:
 	preprocesser = getattr(SwiftXRTpreprocessing, args.preprocesser)
 	kwargs.update({"preprocesser": preprocesser})
@@ -31,7 +35,7 @@ if args.preprocesser:
 		kwargs.update({"preprocesser_kwargs": {"regime": args.regime}})
 print("") # print blank line to make output look nice
 
-SwiftXRTdict = read_SwiftXRT(args.source_directory)
+SwiftXRTdict = read_SwiftXRT(args.source_directory, metadata_file=args.metadata)
 print("") # print blank line to make output look nice
 
 train, val, test = make_dataset(SwiftXRTdict, **kwargs)
