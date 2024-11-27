@@ -2,6 +2,7 @@ import os
 import re
 import numpy as np
 import pandas as pd
+from ast import literal_eval
 from statistics import NormalDist
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import HuberRegressor
@@ -29,7 +30,9 @@ def read_SwiftXRT(directory:str,
         Modes of data collection to be included
         in the output dataset. 
     metadata_file : str, default=None
-        File to read metadata from (only csv format is supported).
+        File to read metadata from.
+        WARNING: only csv format 
+        with sep ';' is supported!
     only_basic_lightcurve : bool, default=True
         If True, only basic lightcurve info will
         be read (i.e. Time, TimePos, TimeNeg,
@@ -128,8 +131,10 @@ def read_SwiftXRT(directory:str,
         if os.path.isfile(f'{directory}/{metadata_file}'):
             metadata = pd.read_csv(
                 f'{directory}/{metadata_file}',
-                index_col=0
+                index_col=0, sep=';'
             )
+            if 'Flares' in metadata.columns:
+                metadata['Flares'] = metadata['Flares'].apply(literal_eval)
             for event in events.keys():
                 if event in metadata.index:
                     events[event].update(
@@ -315,7 +320,8 @@ def rebin(dataframe:pd.DataFrame,
 
         if masked_flares:
             flares = np.full_like(lgTimeOrig, fill_value=False)
-            for (start, stop) in flares_list:
+            for flare in flares_list:
+                start, stop = flare
                 flares += (
                     (start <= 10**lgTimeOrig) * (10**lgTimeOrig <= stop)
                 ).astype(bool)
@@ -386,7 +392,8 @@ def rebin(dataframe:pd.DataFrame,
 
     if masked_flares:
             flares = np.full_like(lgTime, fill_value=False)
-            for (start, stop) in flares_list:
+            for flare in flares_list:
+                start, stop = flare
                 flares += (
                     (start <= 10**lgTime) * (10**lgTime <= stop)
                 ).astype(bool)
@@ -1205,7 +1212,7 @@ def make_dataset(SwiftXRTdict:dict,
         preprocesser_kwargs = {}
     print('[Creating Dataset]: All available data collection modes')
     for event_name, datadict in tqdm(SwiftXRTdict.items()):
-        
+
         dataframe = datadict['data']
 
         if preprocesser_kwargs.get('masked_flares', False):
