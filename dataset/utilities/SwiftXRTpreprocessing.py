@@ -226,6 +226,7 @@ def rebin(dataframe:pd.DataFrame,
           regime:str='padding', padding:float=-3.0,
           subtract_background:bool=True,
           masked_flares:bool=False, flares_list:list=[],
+          **kwargs
     )->dict:
     """
     Applies rebinning to a single Swift-XRT lightcurve.
@@ -1129,7 +1130,7 @@ class FeatureExtractor:
 
         return average
 
-def extract_features(dataframe:pd.DataFrame)->dict:
+def extract_features(dataframe:pd.DataFrame, **kwargs)->dict:
     """
     Extract all available features using FeatureExtractor class.
 
@@ -1205,6 +1206,14 @@ def make_dataset(SwiftXRTdict:dict,
     print('[Creating Dataset]: All available data collection modes')
     for event_name, datadict in tqdm(SwiftXRTdict.items()):
         dataframe = datadict['data']
+        if (
+            'masked_flares' in preprocesser_kwargs.keys()
+            ):
+
+            preprocesser_kwargs.update(
+                'flares_list': datadict.get('Flares', [])
+            )
+            
         if criterion(dataframe):
             year = get_year(event_name)
             preprocessed = preprocesser(dataframe, **preprocesser_kwargs)

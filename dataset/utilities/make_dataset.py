@@ -8,9 +8,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-s", "--source_directory", type=str,
 					help="the directory to read data from"
 )
-parser.add_argument("--metadata", type=str,
-					help="csv metadata file name", default=None
-)
 parser.add_argument("-n", "--name", type=str,
 					help="the name of output .csv files"
 )
@@ -23,6 +20,9 @@ parser.add_argument("-r", "--regime", type=str,
 					choices=["padding", "linear_interpolation", "none"],
 					default="none",
 					help="rebinning regime (ignored unless rebin preprocesser is used)"
+)
+parser.add_argument("--metadata", type=str,
+					help="csv metadata file name", default=None
 )
 
 args = parser.parse_args()
