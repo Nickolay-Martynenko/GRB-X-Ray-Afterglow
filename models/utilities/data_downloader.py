@@ -10,7 +10,7 @@ from ast import literal_eval
 PARENT_DIR_URL = (
     'https://raw.githubusercontent.com/'+
     'Nickolay-Martynenko/GRB-X-Ray-Afterglow/'+
-    'main/dataset/'
+    'masked-flares/dataset/'
 )
 
 SPACES = re.compile(r"\s+")
