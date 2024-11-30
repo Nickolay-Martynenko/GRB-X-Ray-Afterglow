@@ -52,7 +52,7 @@ def train_val_test_downloader(
     ----------
     dataset_name : str, default='features'
         Name of the dataset to be downloaded.
-    load_labels : bool, default=True
+    download_labels : bool, default=True
         If True, Swift analysis data is also downloaded
         and returned as a separate dataframe.
     Returns
