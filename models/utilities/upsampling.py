@@ -41,9 +41,9 @@ def upsampling(
         replace=True,
         random_state=random_state)
 
-    rate, weight = (
+    rate, weight, flares = (
         np.array(upsampled.loc[:, col].tolist(), dtype='float32')
-        for col in ['lgRate', 'weight']
+        for col in ['lgRate', 'weight', 'flares']
     )
 
     n_samples, n_bins = rate.shape
@@ -71,10 +71,12 @@ def upsampling(
 
             rate[rows, :] = np.roll(rate[rows, :], shift, axis=1)
             weight[rows, :] = np.roll(weight[rows, :], shift, axis=1)
+            flares[rows, :] = np.roll(flares[rows, :], shift, axis=1)
 
             insert = slice(0,shift) if shift>0 else slice(n_bins+shift,n_bins)
 
             weight[rows, insert] = 0.0
+            flares[rows, insert] = 0.0
 
             for r in np.argwhere(rows).ravel():
                 non_empty = weight[r, :] > 0
@@ -86,5 +88,7 @@ def upsampling(
 
     upsampled['lgRate'] = rate.tolist()
     upsampled['weight'] = weight.tolist()
+    upsampled['flares'] = flares.tolist()
+    upsampled['weight_masked_flares'] = ( weight * (1.0-flares) ).tolist()
 
     return upsampled

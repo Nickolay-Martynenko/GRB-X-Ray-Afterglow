@@ -89,7 +89,7 @@ def train_val_test_downloader(
     )
 
     if download_labels:
-        labels_url = PARENT_DIR_URL+'Data/GRBtable.csv'
+        labels_url = PARENT_DIR_URL+'SwiftXRT/GRBtable.csv'
         subprocess.run(['curl', '-o', './tmp/labels.csv', '-s',
                         '--show-error', f'{labels_url}'])
         labels = pd.read_csv('./tmp/labels.csv',
